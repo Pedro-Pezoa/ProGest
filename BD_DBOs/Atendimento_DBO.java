@@ -3,13 +3,13 @@ package BD_DBOs;
 public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 {
 	protected int codAten, codClien;
-	protected String nomeAten, dataAten, tipoeAten, obsClien, obsAten, statusAten;
+	protected String nomeAten, dataAten, tipoeAten, obsClien, statusAten;
 	
 	//---------------------------------------------------------------------------------------------------------------------------//
     //---------------------------------------------------------Construtor--------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
 	
-	public Atendimento_DBO(int _novoAten, int _novoCod, String _novoNome, String _novaData, String _novoTipo, String _novaObsClien, String _novaObsAten, String _novoStatus) throws Exception
+	public Atendimento_DBO(int _novoAten, int _novoCod, String _novoNome, String _novaData, String _novoTipo, String _novaObsClien, String _novoStatus) throws Exception
 	{
 		this.setCodAten(_novoAten);
 		this.setCodClien(_novoCod);
@@ -17,7 +17,6 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.setDataAten(_novaData);
 		this.setTipoeAten(_novoTipo);
 		this.setObsClien(_novaObsClien);
-		this.setObsAten(_novaObsAten);
 		this.setStatusAten(_novoStatus);
 	}
 
@@ -91,17 +90,6 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.obsClien = _obsClien;
 	}
 
-	public String getObsAten() 
-	{
-		return obsAten;
-	}
-
-	public void setObsAten(String _obsAten) throws Exception
-	{
-		if (_obsAten == null || _obsAten.equals("")) throw new Exception("Observação 2 Inválido");
-		this.obsAten = _obsAten;
-	}
-
 	public String getStatusAten() 
 	{
 		return this.statusAten;
@@ -124,7 +112,6 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		result *= 7 + this.codClien;
 		result *= 7 + this.dataAten.hashCode();
 		result *= 7 + this.nomeAten.hashCode();
-		result *= 7 + this.obsAten.hashCode();
 		result *= 7 + this.obsClien.hashCode();
 		result *= 7 + this.statusAten.hashCode();
 		result *= 7 + this.tipoeAten.hashCode();
@@ -141,7 +128,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		{
 			Atendimento_DBO outro = (Atendimento_DBO) _obj;
 			if (this.codAten == outro.codAten && this.codClien == outro.codClien && this.nomeAten.equals(outro.nomeAten) && this.dataAten.equals(outro.dataAten) &&
-				this.tipoeAten.equals(outro.tipoeAten) && this.obsAten.equals(outro.obsAten) && this.obsClien.equals(outro.obsClien) && this.statusAten.equals(outro.statusAten))
+				this.tipoeAten.equals(outro.tipoeAten) && this.obsClien.equals(outro.obsClien) && this.statusAten.equals(outro.statusAten))
 				return true;
 		}
 		
@@ -167,7 +154,6 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.codClien = _outro.codClien;
 		this.tipoeAten = _outro.tipoeAten;
 		this.tipoeAten = _outro.tipoeAten;
-		this.obsAten = _outro.obsAten;
 		this.obsClien = _outro.obsClien;
 		this.statusAten = _outro.statusAten;
 	}
