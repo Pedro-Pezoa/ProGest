@@ -26,7 +26,7 @@ public class Cliente_DAO
 	
     public Cliente_DBO getCliente_DBO(int _codClien) throws Exception
     {
-    	if (_codClien <= 0 || !this.isCadastrado(_codClien)) throw new Exception ("Cliente Não Existe");
+    	if (_codClien <= 0 || !this.isCadastrado(this.getCliente_DBO(_codClien))) throw new Exception ("Cliente Não Existe");
     	
     	Cliente_DBO cliente = null;
 
@@ -38,6 +38,8 @@ public class Cliente_DAO
             bd.setInt (1, _codClien);
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery ();
+            result.next();
+            
             cliente = new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
             		                  result.getString("emailCliente"), result.getString("telefone"));
         }
@@ -61,6 +63,25 @@ public class Cliente_DAO
 
         return result;
     }
+    
+    public Cliente_DBO getFirst() throws Exception
+    {
+    	MeuResultSet result = this.getCliente_DAO();
+        result.next();
+        
+        return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+                               result.getString("emailCliente"), result.getString("telefone"));
+    }
+    
+    public Cliente_DBO getLast() throws Exception
+    {
+    	MeuResultSet result = this.getCliente_DAO();
+        result.afterLast();
+        result.previous();
+        
+        return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+                               result.getString("emailCliente"), result.getString("telefone"));
+    }
 	
     //-----------------------------------------------------------------------------------------------------------------------------------//
     //------------------------------------------------------------Métodos CRUD-----------------------------------------------------------//
@@ -69,7 +90,6 @@ public class Cliente_DAO
 	public void incluirClien (Cliente_DBO _cliente) throws Exception
     {
         if (_cliente == null) throw new Exception ("Cliente Inválido");
-        if (this.isCadastrado(_cliente.getCodClien())) throw new Exception ("Cliente Já Cadastrado");
 
         try
         {
@@ -94,7 +114,7 @@ public class Cliente_DAO
     public void excluirClien (int _codClien) throws Exception
     {
     	if (_codClien <= 0) throw new Exception ("Cliente Inválido");
-        if (!this.isCadastrado(_codClien)) throw new Exception ("Cliente Não Cadastrado");
+        if (!this.isCadastrado(this.getCliente_DBO(_codClien))) throw new Exception ("Cliente Não Cadastrado");
 
         try
         {
@@ -115,7 +135,7 @@ public class Cliente_DAO
 
     public void alterarClien (Cliente_DBO _cliente) throws Exception
     {
-    	if (_cliente == null || !this.isCadastrado(_cliente.getCodClien())) throw new Exception ("Cliente Não Existe");
+    	if (_cliente == null || !this.isCadastrado(_cliente)) throw new Exception ("Cliente Não Existe");
 
         try
         {
@@ -141,18 +161,21 @@ public class Cliente_DAO
     //---------------------------------------------------------Método Auxiliar-----------------------------------------------------------//
     //-----------------------------------------------------------------------------------------------------------------------------------//
     
-    public boolean isCadastrado (int _codClien) throws Exception
+    public boolean isCadastrado (Cliente_DBO _clien) throws Exception
     {
         boolean achou = false;
 
         try
         {
-            String sql = "select * from ClientePG where codCliente=?";
+            String sql = "select * from ClientePG where nomeCliente=? and emailCliente=? and telefone=?";
 
             bd.prepareStatement(sql);
-            bd.setInt(1, _codClien);
+            bd.setString(1, _clien.getNomeClien());
+            bd.setString(2, _clien.getEmailClien());
+            bd.setString(3, _clien.getTeleClien());
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery();
+            
             achou = result.first();
         }
         catch (SQLException erro){throw new Exception ("Erro ao procurar o cliente");}

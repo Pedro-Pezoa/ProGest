@@ -6,6 +6,7 @@ import BD_Basicos.MeuPreparedStatement;
 import BD_Basicos.MeuResultSet;
 import BD_Basicos.Utils;
 import BD_DBOs.Atendimento_DBO;
+import BD_DBOs.Cliente_DBO;
 
 public class Atendimento_DAO 
 {
@@ -62,6 +63,19 @@ public class Atendimento_DAO
         catch (SQLException erro){throw new Exception ("Erro ao recuperar a tabela Atendimento");}
 
         return result;
+    }
+    
+    public Atendimento_DBO getFirst() throws Exception
+    {
+    	String sql = "select * from ClientePG";
+        bd.prepareStatement (sql);
+        
+        MeuResultSet result = (MeuResultSet)bd.executeQuery();
+        result.next();
+        
+        return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
+                                   result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
+                                   result.getString("statusAtendimento"));
     }
 	
     //-----------------------------------------------------------------------------------------------------------------------------------//
