@@ -82,6 +82,23 @@ public class Cliente_DAO
         return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
                                result.getString("emailCliente"), result.getString("telefone"));
     }
+    
+    public Cliente_DBO getProx(int _codClien) throws Exception
+    {
+    	MeuResultSet result = this.getCliente_DAO();
+        result.next();
+        
+        while (!result.isLast())
+        {
+	        if (result.getInt("codCliente") == _codClien) 
+	        {
+	        	result.next();
+	        	return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+	                                   result.getString("emailCliente"), result.getString("telefone"));
+	        }
+        }
+        return null;
+    }
 	
     //-----------------------------------------------------------------------------------------------------------------------------------//
     //------------------------------------------------------------Métodos CRUD-----------------------------------------------------------//
@@ -90,7 +107,8 @@ public class Cliente_DAO
 	public void incluirClien (Cliente_DBO _cliente) throws Exception
     {
         if (_cliente == null) throw new Exception ("Cliente Inválido");
-
+        if (this.isCadastrado(_cliente)) throw new Exception ("Cliente Já Cadastrado");
+        
         try
         {
             String sql = "insert into ClientePG values(?,?,?,?)";
@@ -111,17 +129,17 @@ public class Cliente_DAO
         }
     }
 
-    public void excluirClien (int _codClien) throws Exception
+    public void excluirClien (Cliente_DBO _cliente) throws Exception
     {
-    	if (_codClien <= 0) throw new Exception ("Cliente Inválido");
-        if (!this.isCadastrado(this.getCliente_DBO(_codClien))) throw new Exception ("Cliente Não Cadastrado");
+    	if (_cliente.getCodClien() <= 0) throw new Exception ("Cliente Inválido");
+        if (!this.isCadastrado(_cliente)) throw new Exception ("Cliente Não Cadastrado");
 
         try
         {
             String sql = "delete from ClientePG where codCliente=?";
 
             bd.prepareStatement(sql);
-            bd.setInt (1, _codClien);
+            bd.setInt (1, _cliente.getCodClien());
 
             bd.executeUpdate();
             bd.commit();

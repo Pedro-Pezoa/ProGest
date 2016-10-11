@@ -22,7 +22,7 @@ import java.awt.event.WindowEvent;
 public class Cadastros extends Utils
 {
 	private JFrame frmCadastro;
-	private JButton btnCliente, btnAtendimento, btnConcluir, btnInserir; 
+	private JButton btnCliente, btnAtendimento, btnConcluir, btnInserir, btnFim, btnPrim, btnAnt; 
 	private JTextField txtNomeClien, txtTelefone, txtEmail;
 	private JLabel lblCodigoCliente;
 	private JPanel pnlCliente;
@@ -62,11 +62,13 @@ public class Cadastros extends Utils
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				ehClien = true;
+				btnPrim.setEnabled(false);
+				btnAnt.setEnabled(false);
 				try 
 				{
 					Cliente_DBO cliente = Utils.clien.getFirst();
 					printInfo(cliente);
-				} catch (Exception e) {e.getMessage();}
+				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
 		});
 		frmCadastro.setTitle("Ger\u00EAnciamento de Cadastros");
@@ -99,13 +101,14 @@ public class Cadastros extends Utils
 				{
 					if (result == 0) 
 					{
-						Utils.clien.excluirClien(Integer.parseInt(lblCodigoCliente.getText()));
+						Utils.clien.excluirClien(new Cliente_DBO(Integer.parseInt(lblCodigoCliente.getText()), txtNomeClien.getText(),
+								                                 txtEmail.getText(), txtTelefone.getText()));
 						JOptionPane.showMessageDialog(null, "Exclusão feita com sucesso");
 					}
 					
 					else JOptionPane.showMessageDialog(null, "Exclusão Cancelada");
 					printInfo(Utils.clien.getFirst());
-				} catch (Exception e1) {e1.getMessage();}
+				} catch (Exception e1) {System.err.println(e1.getMessage());}
 			}
 		});
 		btnExcluir.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -122,22 +125,52 @@ public class Cadastros extends Utils
 		btnBuscar.setBounds(435, 45, 106, 23);
 		frmCadastro.getContentPane().add(btnBuscar);
 		
-		JButton btnPrim = new JButton("Primeiro");
+		btnPrim = new JButton("Primeiro");
+		btnPrim.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		btnPrim.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnPrim.setBounds(87, 79, 106, 23);
 		frmCadastro.getContentPane().add(btnPrim);
 		
-		JButton btnAnt = new JButton("Anterior");
+		btnAnt = new JButton("Anterior");
+		btnAnt.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		btnAnt.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnAnt.setBounds(203, 79, 106, 23);
 		frmCadastro.getContentPane().add(btnAnt);
 		
 		JButton btnProx = new JButton("Pr\u00F3ximo");
+		btnProx.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Cliente_DBO clien = Utils.clien.getProx(Integer.parseInt(lblCodigoCliente.getText()));
+					if (clien != null)
+					{
+						printInfo(clien);
+						btnPrim.setEnabled(true);
+						btnAnt.setEnabled(true);
+					}
+					else
+					{
+						btnProx.setEnabled(false);
+						btnFim.setEnabled(false);
+					}
+				} catch (Exception e) {System.err.println(e.getMessage());}
+			}
+		});
 		btnProx.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnProx.setBounds(319, 79, 106, 23);
 		frmCadastro.getContentPane().add(btnProx);
 		
-		JButton btnFim = new JButton("\u00DAltimo");
+		btnFim = new JButton("\u00DAltimo");
+		btnFim.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		btnFim.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnFim.setBounds(435, 79, 106, 23);
 		frmCadastro.getContentPane().add(btnFim);
