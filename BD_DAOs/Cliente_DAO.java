@@ -24,9 +24,9 @@ public class Cliente_DAO
     //---------------------------------------------------------Métodos de Getters--------------------------------------------------------//
     //-----------------------------------------------------------------------------------------------------------------------------------//
 	
-    public Cliente_DBO getCliente_DBO(int _codClien) throws Exception
+    public Cliente_DBO getCliente_DBO(Cliente_DBO _clien) throws Exception
     {
-    	if (_codClien <= 0 || !this.isCadastrado(this.getCliente_DBO(_codClien))) throw new Exception ("Cliente Não Existe");
+    	if (_clien == null || !this.isCadastrado(_clien)) throw new Exception ("Cliente Não Existe");
     	
     	Cliente_DBO cliente = null;
 
@@ -35,7 +35,7 @@ public class Cliente_DAO
             String sql = "select * from ClientePG where codCliente=?";
 
             bd.prepareStatement (sql);
-            bd.setInt (1, _codClien);
+            bd.setInt (1, _clien.getCodClien());
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery ();
             result.next();
@@ -57,7 +57,7 @@ public class Cliente_DAO
             String sql = "select * from ClientePG";
 
             bd.prepareStatement (sql);
-            result = (MeuResultSet)bd.executeQuery ();
+            result = (MeuResultSet)bd.executeQuery();
         }
         catch (SQLException erro){throw new Exception ("Erro ao recuperar a tabela Cliente");}
 
@@ -94,8 +94,33 @@ public class Cliente_DAO
 	        {
 	        	result.next();
 	        	return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
-	                                   result.getString("emailCliente"), result.getString("telefone"));
+		                               result.getString("emailCliente"), result.getString("telefone"));
 	        }
+	        else result.next();
+        }
+        return null;
+    }
+    
+    public Cliente_DBO getAnt(int _codClien) throws Exception
+    {
+    	MeuResultSet result = this.getCliente_DAO();
+        result.next();
+        
+        while (!result.isLast())
+        {
+	        if (result.getInt("codCliente") == _codClien) 
+	        {
+	        	result.previous();
+	        	return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+		                               result.getString("emailCliente"), result.getString("telefone"));
+	        }
+	        else result.next();
+        }
+        if (result.isLast()) 
+        {
+        	result.previous();
+        	return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+	                               result.getString("emailCliente"), result.getString("telefone"));
         }
         return null;
     }
@@ -181,9 +206,7 @@ public class Cliente_DAO
     
     public boolean isCadastrado (Cliente_DBO _clien) throws Exception
     {
-        boolean achou = false;
-
-        try
+    	try
         {
             String sql = "select * from ClientePG where nomeCliente=? and emailCliente=? and telefone=?";
 
@@ -193,11 +216,12 @@ public class Cliente_DAO
             bd.setString(3, _clien.getTeleClien());
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery();
+            result.next();
             
-            achou = result.first();
+            if (result.getString("nomeCliente") != null) return true;
         }
-        catch (SQLException erro){throw new Exception ("Erro ao procurar o cliente");}
+        catch (SQLException erro){return false;}
 
-        return achou;
+        return false;
     }
 }

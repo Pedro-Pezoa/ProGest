@@ -22,11 +22,13 @@ import java.awt.event.WindowEvent;
 public class Cadastros extends Utils
 {
 	private JFrame frmCadastro;
-	private JButton btnCliente, btnAtendimento, btnConcluir, btnInserir, btnFim, btnPrim, btnAnt; 
+	private JButton btnCliente, btnAtendimento, btnCancelar, btnInserir, btnBuscar,
+	                btnFim, btnPrim, btnAnt, btnProx, btnExcluir, btnAlterar; 
 	private JTextField txtNomeClien, txtTelefone, txtEmail;
 	private JLabel lblCodigoCliente;
 	private JPanel pnlCliente;
-	private boolean ehClien;
+	private boolean ehClien, podeConcluir;
+	private Cliente_DBO clienteAux;
 	
 	/**
 	 * Launch the application.
@@ -62,12 +64,13 @@ public class Cadastros extends Utils
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				ehClien = true;
-				btnPrim.setEnabled(false);
-				btnAnt.setEnabled(false);
+				podeConcluir = false;
+				mudaBotaoPrint(false, false, true, true);
 				try 
 				{
 					Cliente_DBO cliente = Utils.clien.getFirst();
 					printInfo(cliente);
+					clienteAux = cliente;
 				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
 		});
@@ -79,35 +82,65 @@ public class Cadastros extends Utils
 		btnInserir = new JButton("Inserir");
 		btnInserir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (ehClien)
+				try 
 				{
-					try 
+					if (ehClien)
 					{
-						lblCodigoCliente.setText((Utils.clien.getLast().getCodClien()+1)+"");
-						mudaBotao(false);
-					} catch (Exception e1) {System.err.println(e1.getMessage());}
-				}
-			}
-		});
+						if (!podeConcluir)
+						{
+							clienteAux.setCodClien(Integer.parseInt(lblCodigoCliente.getText()));
+							printInfo(Utils.clien.getLast());
+							lblCodigoCliente.setText((Utils.clien.getLast().getCodClien()+1)+"");
+							
+							mudaBotaoTxt(false);
+							mudaBotaoPrint(false, false, false, false);
+							
+							btnInserir.setText("Concluir");
+							podeConcluir = true;
+						}
+						else
+						{
+							int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
+							
+							if (result == 0)
+							{
+								try
+								{
+									Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast().getCodClien()+1, txtNomeClien.getText(),
+											                                 txtEmail.getText(), txtTelefone.getText()));
+									printInfo(Utils.clien.getLast());
+									
+									mudaBotaoTxt(true);
+									mudaBotaoPrint(true, true, false, false);
+									
+									btnInserir.setText("Inserir");
+									podeConcluir = false;
+									
+									JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
+								}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
+							}
+						}
+					}
+				}catch (Exception e1) {e1.getMessage();}
+		}});
 		btnInserir.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnInserir.setBounds(87, 45, 106, 23);
 		frmCadastro.getContentPane().add(btnInserir);
 		
-		JButton btnExcluir = new JButton("Excluir");
+		btnExcluir = new JButton("Excluir");
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int result = JOptionPane.showConfirmDialog(null, "Deseja excluir este Cliente:");	
+				int result = JOptionPane.showConfirmDialog(null, "Deseja excluir este Cliente:"),
+					codClien = Integer.parseInt(lblCodigoCliente.getText());	
 				try 
 				{
 					if (result == 0) 
-					{
 						Utils.clien.excluirClien(new Cliente_DBO(Integer.parseInt(lblCodigoCliente.getText()), txtNomeClien.getText(),
 								                                 txtEmail.getText(), txtTelefone.getText()));
-						JOptionPane.showMessageDialog(null, "Exclusão feita com sucesso");
-					}
+					
 					
 					else JOptionPane.showMessageDialog(null, "Exclusão Cancelada");
-					printInfo(Utils.clien.getFirst());
+					printInfo(Utils.clien.getAnt(codClien));
 				} catch (Exception e1) {System.err.println(e1.getMessage());}
 			}
 		});
@@ -115,12 +148,12 @@ public class Cadastros extends Utils
 		btnExcluir.setBounds(203, 45, 106, 23);
 		frmCadastro.getContentPane().add(btnExcluir);
 		
-		JButton btnAlterar = new JButton("Alterar");
+		btnAlterar = new JButton("Alterar");
 		btnAlterar.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnAlterar.setBounds(319, 45, 106, 23);
 		frmCadastro.getContentPane().add(btnAlterar);
 		
-		JButton btnBuscar = new JButton("Buscar");
+		btnBuscar = new JButton("Buscar");
 		btnBuscar.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnBuscar.setBounds(435, 45, 106, 23);
 		frmCadastro.getContentPane().add(btnBuscar);
@@ -128,6 +161,11 @@ public class Cadastros extends Utils
 		btnPrim = new JButton("Primeiro");
 		btnPrim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				mudaBotaoPrint(false, false, true, true);
+				try 
+				{
+					printInfo(Utils.clien.getFirst());
+				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
 		});
 		btnPrim.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -137,13 +175,23 @@ public class Cadastros extends Utils
 		btnAnt = new JButton("Anterior");
 		btnAnt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Cliente_DBO clien = Utils.clien.getAnt(Integer.parseInt(lblCodigoCliente.getText()));
+					if (clien != null)
+					{
+						printInfo(clien);
+						mudaBotaoPrint(true, true, true, true);
+						if (clien.equals(Utils.clien.getFirst()))
+							mudaBotaoPrint(false, false, true, true);
+					}
+				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
 		});
 		btnAnt.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnAnt.setBounds(203, 79, 106, 23);
 		frmCadastro.getContentPane().add(btnAnt);
 		
-		JButton btnProx = new JButton("Pr\u00F3ximo");
+		btnProx = new JButton("Pr\u00F3ximo");
 		btnProx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -151,13 +199,9 @@ public class Cadastros extends Utils
 					if (clien != null)
 					{
 						printInfo(clien);
-						btnPrim.setEnabled(true);
-						btnAnt.setEnabled(true);
-					}
-					else
-					{
-						btnProx.setEnabled(false);
-						btnFim.setEnabled(false);
+						mudaBotaoPrint(true, true, true, true);
+						if (clien.equals(Utils.clien.getLast()))
+							mudaBotaoPrint(true, true, false, false);
 					}
 				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
@@ -169,6 +213,11 @@ public class Cadastros extends Utils
 		btnFim = new JButton("\u00DAltimo");
 		btnFim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				mudaBotaoPrint(true, true, false, false);
+				try 
+				{
+					printInfo(Utils.clien.getLast());
+				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
 		});
 		btnFim.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -179,7 +228,7 @@ public class Cadastros extends Utils
 		btnCliente.setEnabled(false);
 		btnCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ehCliente(true);
+				ehQualTabela(true);
 			}
 		});
 		btnCliente.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -250,51 +299,60 @@ public class Cadastros extends Utils
 		lblCodigoCliente.setBounds(181, 11, 263, 14);
 		pnlCliente.add(lblCodigoCliente);
 		
-		btnConcluir = new JButton("Concluir");
-		btnConcluir.addActionListener(new ActionListener() {
+		btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
 				try 
 				{
-					if (result == 0)
+					if (podeConcluir)
 					{
-						Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast().getCodClien()+1, txtNomeClien.getText(),
-								                                 txtEmail.getText(), txtTelefone.getText()));
-						JOptionPane.showMessageDialog(null, "Inclusão feita com sucesso");
-					}
-					else
-					{
+						printInfo(Utils.clien.getCliente_DBO(clienteAux));
+						
+						mudaBotaoTxt(true);
+						mudaBotaoPrint(true, true, true, true);
+						
+						btnInserir.setText("Inserir");
+						podeConcluir = false;
+						
 						JOptionPane.showMessageDialog(null, "Inclusão Cancelado");
-						printInfo(Utils.clien.getFirst());
 					}
-				} catch (Exception e1) {e1.getMessage();}
-				mudaBotao(true);
+				} catch (Exception e1) {System.err.println(e1.getMessage());}
 			}
 		});
-		btnConcluir.setFont(new Font("Consolas", Font.PLAIN, 16));
-		btnConcluir.setEnabled(false);
-		btnConcluir.setBounds(399, 11, 142, 23);
-		frmCadastro.getContentPane().add(btnConcluir);
+		btnCancelar.setFont(new Font("Consolas", Font.PLAIN, 16));
+		btnCancelar.setEnabled(false);
+		btnCancelar.setBounds(399, 11, 142, 23);
+		frmCadastro.getContentPane().add(btnCancelar);
 	}
 
 	private void printInfo(Object _obj) 
 	{
-		Cliente_DBO clien = null;
-		Atendimento_DBO aten = null;
-		
-		if (ehClien) clien = (Cliente_DBO)_obj;
-		else aten = (Atendimento_DBO)_obj;
-		
-		if (clien != null)
+		if (_obj == null) 
 		{
-			lblCodigoCliente.setText(clien.getCodClien()+"");
-			txtNomeClien.setText(clien.getNomeClien());
-			txtEmail.setText(clien.getEmailClien());
-			txtTelefone.setText(clien.getTeleClien());
+			lblCodigoCliente.setText("");
+			txtNomeClien.setText("");
+			txtEmail.setText("");
+			txtTelefone.setText("");
+		}
+		else
+		{
+			Cliente_DBO clien = null;
+			Atendimento_DBO aten = null;
+			
+			if (ehClien) clien = (Cliente_DBO)_obj;
+			else aten = (Atendimento_DBO)_obj;
+			
+			if (clien != null)
+			{
+				lblCodigoCliente.setText(clien.getCodClien()+"");
+				txtNomeClien.setText(clien.getNomeClien());
+				txtEmail.setText(clien.getEmailClien());
+				txtTelefone.setText(clien.getTeleClien());
+			}
 		}
 	}
 	
-	private void ehCliente(boolean _qual)
+	private void ehQualTabela(boolean _qual)
 	{
 		ehClien = _qual;
 		btnCliente.setEnabled(!_qual);
@@ -311,14 +369,25 @@ public class Cadastros extends Utils
 		}
 	}
 	
-	private void mudaBotao(boolean _qual)
+	private void mudaBotaoTxt(boolean _qual)
 	{
 		txtNomeClien.setEditable(!_qual);
 		txtEmail.setEditable(!_qual);
 		txtTelefone.setEditable(!_qual);
 		
-		btnConcluir.setEnabled(!_qual);
-		btnInserir.setEnabled(_qual);
+		btnCancelar.setEnabled(!_qual);
 		btnAtendimento.setEnabled(_qual);
+		
+		btnAlterar.setEnabled(_qual);
+		btnExcluir.setEnabled(_qual);
+		btnBuscar.setEnabled(_qual);
+	}
+	
+	private void mudaBotaoPrint(boolean _qualPrim, boolean _qualAnt, boolean _qualProx, boolean _qualUlt)
+	{
+		btnPrim.setEnabled(_qualPrim);
+		btnAnt.setEnabled(_qualAnt);
+		btnProx.setEnabled(_qualProx);
+		btnFim.setEnabled(_qualUlt);
 	}
 }

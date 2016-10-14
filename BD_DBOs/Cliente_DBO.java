@@ -9,7 +9,7 @@ public class Cliente_DBO implements Cloneable, Comparable<Cliente_DBO>
     //---------------------------------------------------------Construtor--------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
 	
-	public Cliente_DBO(int _novoCod, String _novoNome, String _novoTele,String _novoEmail) throws Exception
+	public Cliente_DBO(int _novoCod, String _novoNome, String _novoEmail, String _novoTele) throws Exception
 	{
 		this.setCodClien(_novoCod);
 		this.setNomeClien(_novoNome);
@@ -45,7 +45,7 @@ public class Cliente_DBO implements Cloneable, Comparable<Cliente_DBO>
 
 	public String getTeleClien() 
 	{
-		return teleClien;
+		return this.teleClien;
 	}
 
 	public void setTeleClien(String _teleClien) throws Exception
@@ -56,7 +56,7 @@ public class Cliente_DBO implements Cloneable, Comparable<Cliente_DBO>
 
 	public String getEmailClien() 
 	{
-		return emailClien;
+		return this.emailClien;
 	}
 
 	public void setEmailClien(String _emailClien) throws Exception
@@ -72,8 +72,8 @@ public class Cliente_DBO implements Cloneable, Comparable<Cliente_DBO>
 	@Override
 	public String toString() 
 	{
-		return "Código do Client: " + this.codClien + " Nome do Cliente: " + this.nomeClien + 
-			   " Telefone do Cliente: " + this.teleClien + " Email do Cliente=" + this.emailClien;
+		return "Código do Cliente: " + this.codClien + "--Nome do Cliente: " + this.nomeClien + 
+				"--Email do Cliente=" + this.emailClien + "--Telefone do Cliente: " + this.teleClien;
 	}
 	
 	@Override
@@ -93,7 +93,7 @@ public class Cliente_DBO implements Cloneable, Comparable<Cliente_DBO>
 		if (this == _obj)return true;
 		if (_obj == null)return false;
 		
-		if (getClass() == _obj.getClass())
+		if (this.getClass() == _obj.getClass())
 		{
 			Cliente_DBO outro = (Cliente_DBO) _obj;
 			if (this.codClien == outro.codClien && this.nomeClien.equals(outro.nomeClien) &&
