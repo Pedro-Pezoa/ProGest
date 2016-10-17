@@ -178,7 +178,7 @@ public class Cliente_DAO
 
     public void alterarClien (Cliente_DBO _cliente) throws Exception
     {
-    	if (_cliente == null || !this.isCadastrado(_cliente)) throw new Exception ("Cliente Não Existe");
+    	if (_cliente == null || this.isCadastrado(_cliente)) throw new Exception ("Cliente Não Existe");
 
         try
         {
