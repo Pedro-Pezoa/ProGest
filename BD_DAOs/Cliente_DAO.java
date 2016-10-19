@@ -9,6 +9,7 @@ import BD_DBOs.Cliente_DBO;
 public class Cliente_DAO 
 {
 	protected MeuPreparedStatement bd;
+	protected String sql;
 	
 	//-------------------------------------------------------------------------------------------------------------------------------//
     //-------------------------------------------------------------Construtor--------------------------------------------------------//
@@ -18,6 +19,7 @@ public class Cliente_DAO
 	{
 		if (_novoBd == null) throw new Exception("BD Inválido");
 		this.bd = _novoBd;
+		this.sql = "select * from ClientePG ";
 	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------------//
@@ -48,15 +50,13 @@ public class Cliente_DAO
         return cliente;
     }
 
-    public MeuResultSet getCliente_DAO() throws Exception
+    public MeuResultSet getCliente_DAO(String _ordenar) throws Exception
     {
         MeuResultSet result = null;
 
         try
         {
-            String sql = "select * from ClientePG";
-
-            bd.prepareStatement (sql);
+            bd.prepareStatement (this.sql + _ordenar);
             result = (MeuResultSet)bd.executeQuery();
         }
         catch (SQLException erro){throw new Exception ("Erro ao recuperar a tabela Cliente");}
@@ -64,18 +64,18 @@ public class Cliente_DAO
         return result;
     }
     
-    public Cliente_DBO getFirst() throws Exception
+    public Cliente_DBO getFirst(String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
         return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
                                result.getString("emailCliente"), result.getString("telefone"));
     }
     
-    public Cliente_DBO getLast() throws Exception
+    public Cliente_DBO getLast(String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.afterLast();
         result.previous();
         
@@ -83,9 +83,9 @@ public class Cliente_DAO
                                result.getString("emailCliente"), result.getString("telefone"));
     }
     
-    public Cliente_DBO getProx(int _codClien) throws Exception
+    public Cliente_DBO getProx(int _codClien, String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
         while (!result.isLast())
@@ -101,9 +101,9 @@ public class Cliente_DAO
         return null;
     }
     
-    public Cliente_DBO getAnt(int _codClien) throws Exception
+    public Cliente_DBO getAnt(int _codClien, String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
         while (!result.isLast())
