@@ -175,6 +175,8 @@ public class Cadastros extends Utils
 						
 						mudaBotaoTxt(false);
 						mudaBotaoPrint(false, false, false, false);
+						
+						podeConcluirBusc = true;
 					} catch (Exception e) {JOptionPane.showMessageDialog(null, e.getMessage());}
 				}
 			}
@@ -403,15 +405,13 @@ public class Cadastros extends Utils
 				{
 					try
 					{
-						Utils.clien.getCliente_DBO(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
-								                                   txtEmail.getText(), txtTelefone.getText()));
-						printInfo(Utils.clien.getCliente_DBO(clienteAux));
+						Cliente_DBO[] vet = Utils.clien.getClientes(txtNomeClien.getText(), txtEmail.getText(), txtTelefone.getText());
+						printInfo(Utils.clien.getCliente_DBO(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
+                                  txtEmail.getText(), txtTelefone.getText())));
 						
-						mudaBotaoTxt(true);
-						mudaBotaoPrint(true, true, true, true);
+						//mudaBotaoTxt(true);
+						//mudaBotaoPrint(true, true, true, true);
 						
-						btnAlterar.setText("Alterar");
-						podeConcluirAlt = false;
 						
 						JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
 					}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}

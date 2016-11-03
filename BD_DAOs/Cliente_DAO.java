@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import BD_Basicos.MeuPreparedStatement;
 import BD_Basicos.MeuResultSet;
 import BD_DBOs.Cliente_DBO;
+import Tipos.Elemento;
+import Tipos.ListaDupla;
 
 public class Cliente_DAO 
 {
@@ -224,4 +226,54 @@ public class Cliente_DAO
 
         return false;
     }
+
+	public ListaDupla<Cliente_DBO> getClientes(String _nome, String _email, String _tel) 
+	{
+		int i = 1;
+		String sql = "select * from ClientePG where";
+		boolean podeNome = false, podeEmail = false, podeTel = false;
+		ListaDupla<Cliente_DBO> clien = new ListaDupla<Cliente_DBO>();
+		
+		try
+        {
+			if (_nome != null || !_nome.equals("")) 
+			{
+				sql += " nomeCliente=?";
+				podeNome = true;
+			}
+			if (_email != null || !_email.equals("")) 
+			{
+				if (podeNome)
+					sql += " and emailCliente=?";
+				else
+					sql += " emailCliente=?";
+				podeEmail = true;
+			}
+			if (_tel != null || !_tel.equals("")) 
+			{
+				if (podeNome || podeEmail)
+					sql += " and telefone=?";
+				else
+					sql += " telefone=?";
+				podeTel = true;
+			}
+
+			bd.prepareStatement(sql);
+            if (podeNome) bd.setString(i++, _nome);
+            if (podeEmail) bd.setString(i++, _email);
+            if (podeTel) bd.setString(i, _tel);
+
+            MeuResultSet result = (MeuResultSet)bd.executeQuery();
+            result.next();
+            
+            if (result.getString("nomeCliente") == null || result.getString("nomeCliente").equals("")) return null;
+            while (!result.isLast())
+            	clien.incluirNoFim(new Elemento<Cliente_DBO>(new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+	                                                                         result.getString("emailCliente"), result.getString("telefone"))));
+            
+        }
+        catch (SQLException erro){return false;}
+
+        return false;
+	}
 }
