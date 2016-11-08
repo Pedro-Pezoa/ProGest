@@ -2,8 +2,8 @@ package Tipos;
 
 public class ListaSimples<Tipo extends Comparable<Tipo>> 
 {
-    protected Elemento<Tipo> inicio;
-    protected Elemento<Tipo> fim;
+	protected Elemento<Tipo> inicio, fim, atual;
+    protected boolean estaPercorrendo;
     
     //---------------------------------------------------------------------------------------------------------------------------//
     //---------------------------------------------------------Construtor--------------------------------------------------------//
@@ -15,8 +15,32 @@ public class ListaSimples<Tipo extends Comparable<Tipo>>
     }
     
     //---------------------------------------------------------------------------------------------------------------------------//
-    //-----------------------------------------------------Métodos Principais----------------------------------------------------//
+    //----------------------------------------------------------Getters----------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
+    
+    public Elemento<Tipo> getInicio()
+    {
+    	return this.inicio;
+    }
+    
+    public Elemento<Tipo> getFim()
+    {
+    	return this.fim;
+    }
+    
+    public Elemento<Tipo> getAtual()
+    {
+    	return this.atual;
+    }
+    
+    public boolean estaPercorrendo()
+    {
+    	return this.estaPercorrendo;
+    }
+    
+    //-------------------------------------------------------------------------------------------------------------------------//
+    //---------------------------------------------------Métodos Principais----------------------------------------------------//
+    //-------------------------------------------------------------------------------------------------------------------------//
     
     public void incluirOrdenado(Tipo N)
     {
@@ -67,10 +91,8 @@ public class ListaSimples<Tipo extends Comparable<Tipo>>
     
     public void excluirDoInicio()
     {
-        if (this.inicio == this.fim) this.fim = null;
-        
+        if (this.inicio == this.fim) this.fim = this.inicio = null;
         if (this.inicio != null) this.inicio = this.inicio.getProx();
-        
     }
     
     public void incluirNoFim(Tipo N)
@@ -125,7 +147,7 @@ public class ListaSimples<Tipo extends Comparable<Tipo>>
     }
     
     //---------------------------------------------------------------------------------------------------------------------------//
-    //------------------------------------------------------Método Auxiliar------------------------------------------------------//
+    //---------------------------------------------------Métodos Auxiliares------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
     
     public Elemento<Tipo> ondeEsta(Tipo N)
@@ -168,8 +190,28 @@ public class ListaSimples<Tipo extends Comparable<Tipo>>
 		}
 	}
     
+    //----------------------------------------------------------------------------------------------------------------------------//
+    //--------------------------------------------------Métodos de Percursso------------------------------------------------------//
+    //----------------------------------------------------------------------------------------------------------------------------//
+    
+    public void iniciaPercurssoSequencial()
+    {
+    	this.atual = this.inicio;
+    	this.estaPercorrendo = true;
+    }
+    
+    public boolean podePercorrer()
+    {
+    	return this.atual != null;
+    }
+    
+    public void setPosAtual()
+    {
+    	this.atual = this.atual.getProx();
+    }
+    
     //---------------------------------------------------------------------------------------------------------------------------//
-    //---------------------------------------------------Métodos Adicionais------------------------------------------------------//
+    //-------------------------------------------------Métodos Apocalipticos-----------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
     
     public String toString()
@@ -189,7 +231,7 @@ public class ListaSimples<Tipo extends Comparable<Tipo>>
     {
     	int ret = super.hashCode();
     	ret *= 7 + this.inicio.hashCode();
-        ret *= 7 + this.fim.hashCode();
+    	ret *= 7 + new Boolean(this.estaPercorrendo).hashCode();
     	return ret;
     }
 }

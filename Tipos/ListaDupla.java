@@ -6,13 +6,17 @@ public class ListaDupla<Tipo extends Comparable<Tipo>>
     protected boolean ehReverso, estaPercorrendo;
     
     //---------------------------------------------------------------------------------------------------------------------------//
-    //----------------------------------------------- ----Construtor e Getters---------------------------------------------------//
+    //--------------------------------------------------------Construtor---------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
     
     public ListaDupla()
     {
         this.inicio = this.fim = null;
     }
+    
+    //---------------------------------------------------------------------------------------------------------------------------//
+    //----------------------------------------------------------Getters----------------------------------------------------------//
+    //---------------------------------------------------------------------------------------------------------------------------//
     
     public Elemento<Tipo> getInicio()
     {
@@ -22,6 +26,31 @@ public class ListaDupla<Tipo extends Comparable<Tipo>>
     public Elemento<Tipo> getFim()
     {
     	return this.fim;
+    }
+    
+    public Elemento<Tipo> getAtual()
+    {
+    	return this.atual;
+    }
+    
+    public boolean estaPercorrendo()
+    {
+    	return this.estaPercorrendo;
+    }
+    
+    public boolean ehReversa()
+    {
+    	return this.ehReverso;
+    }
+    
+    public void setReverso()
+    {
+    	this.ehReverso = !this.ehReverso;
+    }
+    
+    public void setAtual(Elemento<Tipo> _elem)
+    {
+    	this.atual = _elem;
     }
     
     //---------------------------------------------------------------------------------------------------------------------------//
@@ -174,6 +203,10 @@ public class ListaDupla<Tipo extends Comparable<Tipo>>
         }
     }
     
+    //----------------------------------------------------------------------------------------------------------------------------//
+    //--------------------------------------------------Métodos de Percursso------------------------------------------------------//
+    //----------------------------------------------------------------------------------------------------------------------------//
+    
     public void iniciaPercurssoSequencial(boolean _ehReverso)
     {
     	if (_ehReverso) this.atual = this.fim;
@@ -187,19 +220,14 @@ public class ListaDupla<Tipo extends Comparable<Tipo>>
     	return this.atual != null;
     }
     
-    public Elemento<Tipo> getAtual()
-    {
-    	return this.atual;
-    }
-    
-    public void setAtual()
+    public void setPosAtual()
     {
     	if (this.ehReverso) this.atual = this.atual.getAnt();
     	else this.atual = this.atual.getProx();
     }
     
     //---------------------------------------------------------------------------------------------------------------------------//
-    //------------------------------------------------------Método Auxiliar------------------------------------------------------//
+    //---------------------------------------------------Métodos Auxiliares------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
     
     public Elemento<Tipo> ondeEsta(Tipo N)
@@ -248,7 +276,7 @@ public class ListaDupla<Tipo extends Comparable<Tipo>>
     
     public String toString()
     {
-        String ret="[ " + this.inicio;
+        String ret = "[ " + this.inicio;
         Elemento<Tipo> aux = this.inicio.prox;
         
         while (aux != null)
@@ -257,5 +285,14 @@ public class ListaDupla<Tipo extends Comparable<Tipo>>
             aux = aux.getProx();
         }
         return ret + " ]";        
+    }
+    
+    public int hashCode()
+    {
+    	int ret = super.hashCode();
+    	ret *= 7 + this.inicio.hashCode();
+    	ret *= 7 + new Boolean(this.ehReverso).hashCode();
+    	ret *= 7 + new Boolean(this.estaPercorrendo).hashCode();
+    	return ret;
     }
 }

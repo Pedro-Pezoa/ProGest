@@ -1,10 +1,15 @@
 package Tipos;
 
-import Classes.CharOcorrencia;
+import java.io.Serializable;
 
-public class Arvore<Tipo extends Comparable<Tipo>> 
+@SuppressWarnings("serial")
+public class Arvore<Tipo extends Comparable<Tipo>> implements Serializable 
 {
     protected Elemento<Tipo> raizPrincipal;
+    
+    //------------------------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------Construtores-------------------------------------------------//
+    //------------------------------------------------------------------------------------------------------------------//
     
     public Arvore() 
     {
@@ -15,6 +20,42 @@ public class Arvore<Tipo extends Comparable<Tipo>>
     {
 		this.raizPrincipal = N;
 	}
+    
+    //-----------------------------------------------------------------------------------------------------------------------//
+    //--------------------------------------------------Getters e Setters----------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------------------------//
+    
+    public Elemento<Tipo> getRaiz()
+    {
+    	return this.raizPrincipal;
+    }
+    
+    public int getQtosNos()
+    {
+        return qtosNos(raizPrincipal);
+    }
+    
+    private int qtosNos(Elemento<Tipo> Raiz)
+    {
+        if (Raiz == null) return 0;
+        return (qtosNos(Raiz.getDir()) + qtosNos(Raiz.getEsq()) + 1);
+    }
+    
+    public String getQtosEsqDir(Tipo _folha)
+    {
+    	return this.getElemento(this.raizPrincipal, _folha, "");
+    }
+    
+    private String getElemento(Elemento<Tipo> _raiz, Tipo _folha, String _result) 
+    {
+    	if (this.existe(_raiz.getDir(), _folha)) return getElemento(_raiz.getDir(), _folha, _result+"D");
+    	if (this.existe(_raiz.getEsq(), _folha)) return getElemento(_raiz.getEsq(), _folha, _result+"E");
+    	return _result;
+    }
+    
+    //---------------------------------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------Métodos Principais----------------------------------------------------//
+    //---------------------------------------------------------------------------------------------------------------------------//
     
     public void incluir(Elemento<Tipo> N)
     {
@@ -79,52 +120,17 @@ public class Arvore<Tipo extends Comparable<Tipo>>
 	        }
         }
     }
-    
-    public int qtosNos()
-    {
-        return qtosNos(raizPrincipal);
-    }
-    
-    public Elemento<Tipo> getRaiz()
-    {
-    	return this.raizPrincipal;
-    }
-    
-    private int qtosNos(Elemento<Tipo> Raiz)
-    {
-        if (Raiz == null) return 0;
-        return (qtosNos(Raiz.getDir()) + qtosNos(Raiz.getEsq()) + 1);
-    }
-    
-    private String visita(Elemento<Tipo> Raiz)
-    {
-        if (Raiz == null) return "";
-        return visita(Raiz.getEsq()) + " " + Raiz.getInfo()+ " " + visita (Raiz.getDir());
-    }
-    
-    public String getQtosEsqDir(Tipo _tipo)
-    {
-    	return this.getElemento(this.raizPrincipal, _tipo, "");
-    }
-    
-    private String getElemento(Elemento<Tipo> _raiz, Tipo _tipo, String _result) 
-    {
-    	if (this.existe(_raiz.getDir(), _tipo)) return getElemento(_raiz.getDir(), _tipo, _result+"D");
-    	if (this.existe(_raiz.getEsq(), _tipo)) return getElemento(_raiz.getEsq(), _tipo, _result+"E");
-    	return _result;
-    }
-    
-    private boolean existe(Elemento<Tipo> _raiz, Tipo _tipo) 
+
+    //---------------------------------------------------------------------------------------------------------------------------//
+    //---------------------------------------------------Métodos Auxiliares------------------------------------------------------//
+    //---------------------------------------------------------------------------------------------------------------------------//
+	
+	private boolean existe(Elemento<Tipo> _raiz, Tipo _folha) 
     {
     	if (_raiz == null) return false;
-		return _raiz.getInfo().equals(_tipo) || this.existe(_raiz.getDir(), _tipo) || this.existe(_raiz.getEsq(), _tipo);
+		return _raiz.getInfo().equals(_folha) || this.existe(_raiz.getDir(), _folha) || this.existe(_raiz.getEsq(), _folha);
 	}
-
-	public String toString()
-    {
-        return "[ "+ visita(raizPrincipal) + " ]";
-    }
-
+	
 	public Tipo existeEsqDir(String _aux) 
 	{
 		return existeEsqDir(this.raizPrincipal, _aux , 0);
@@ -141,4 +147,26 @@ public class Arvore<Tipo extends Comparable<Tipo>>
 		if (_aux.charAt(_i) == 'E') return existeEsqDir(_elem.getEsq(), _aux, ++_i);
 		return null;
 	} 
+	
+    //---------------------------------------------------------------------------------------------------------------------------//
+    //---------------------------------------------------Métodos Apocalipticos---------------------------------------------------//
+    //---------------------------------------------------------------------------------------------------------------------------//
+	
+	public int hashCode()
+	{
+		int ret = super.hashCode();
+		ret *= 7 + this.raizPrincipal.hashCode();
+		return ret;
+	}
+	
+	public String toString()
+    {
+        return "[ "+ visita(raizPrincipal) + " ]";
+    }
+	
+	private String visita(Elemento<Tipo> Raiz)
+    {
+        if (Raiz == null) return "";
+        return visita(Raiz.getEsq()) + " " + Raiz.getInfo()+ " " + visita (Raiz.getDir());
+    }
 }

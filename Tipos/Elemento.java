@@ -1,18 +1,25 @@
 package Tipos;
 
-public class Elemento<Tipo> 
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Elemento<Tipo> implements Serializable
 {
     protected Tipo info;
     protected Elemento<Tipo> prox, ant, dir, esq; // Se for árvore, ira ser prox = dir e ant = esq
     
+    //----------------------------------------------------------------------------------------------------------------//
     //-----------------------------------------------------Construtor-------------------------------------------------//
+    //----------------------------------------------------------------------------------------------------------------//
     
     public Elemento(Tipo _conteudo)
     {
         this.info = _conteudo;
     }
     
+    //-----------------------------------------------------------------------------------------------------------------------//
     //--------------------------------------------------Getters e Setters----------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------------------------//
     
     public void setInfo(Tipo _c)
     {
@@ -64,7 +71,9 @@ public class Elemento<Tipo>
        return this.esq;
     }
     
+    //---------------------------------------------------------------------------------------------------------------------------//
     //------------------------------------------------Métodos Apocalipticos------------------------------------------------------//
+    //---------------------------------------------------------------------------------------------------------------------------//
     
     public String toString()
     {
@@ -75,6 +84,10 @@ public class Elemento<Tipo>
     {
     	int ret = super.hashCode();
     	ret *= 7 + this.info.hashCode();
+    	if (this.ant != null) ret *= 7 + this.ant.hashCode();
+    	if (this.prox != null) ret *= 7 + this.prox.hashCode();
+    	if (this.esq != null) ret *= 7 + this.esq.hashCode();
+    	if (this.dir != null) ret *= 7 + this.dir.hashCode();
     	return ret;
     }
     

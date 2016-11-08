@@ -227,7 +227,7 @@ public class Cliente_DAO
         return false;
     }
 
-	public ListaDupla<Cliente_DBO> getClientes(String _nome, String _email, String _tel) 
+	public ListaDupla<Cliente_DBO> getClientes(String _nome, String _email, String _tel) throws Exception 
 	{
 		int i = 1;
 		String sql = "select * from ClientePG where";
@@ -236,25 +236,28 @@ public class Cliente_DAO
 		
 		try
         {
-			if (_nome != null || !_nome.equals("")) 
+			if (_nome != null && !_nome.equals("")) 
 			{
-				sql += " nomeCliente=?";
+				_nome = "%" + _nome + "%";
+				sql += " nomeCliente like ?";
 				podeNome = true;
 			}
-			if (_email != null || !_email.equals("")) 
+			if (_email != null && !_email.equals("")) 
 			{
+				_email = "%" + _email + "%";
 				if (podeNome)
-					sql += " and emailCliente=?";
+					sql += " and emailCliente like ?";
 				else
-					sql += " emailCliente=?";
+					sql += " emailCliente like ?";
 				podeEmail = true;
 			}
-			if (_tel != null || !_tel.equals("")) 
+			if (_tel != null && !_tel.equals("")) 
 			{
+				_tel = "%" + _tel + "%";
 				if (podeNome || podeEmail)
-					sql += " and telefone=?";
+					sql += " and telefone like ?";
 				else
-					sql += " telefone=?";
+					sql += " telefone like ?";
 				podeTel = true;
 			}
 
@@ -267,13 +270,15 @@ public class Cliente_DAO
             result.next();
             
             if (result.getString("nomeCliente") == null || result.getString("nomeCliente").equals("")) return null;
-            while (!result.isLast())
+            while (!result.isAfterLast())
+            {
             	clien.incluirNoFim(new Elemento<Cliente_DBO>(new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
 	                                                                         result.getString("emailCliente"), result.getString("telefone"))));
-            
+            	result.next();
+            }
         }
-        catch (SQLException erro){return false;}
+        catch (SQLException erro){return null;}
 
-        return false;
+        return clien;
 	}
 }
