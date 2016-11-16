@@ -1,5 +1,6 @@
 package Forms;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -14,20 +15,24 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JComboBox;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.TextArea;
 import java.awt.Label;
+import javax.swing.JTextArea;
 
 public class Atendimento extends Utils
 {
 	private JFrame frmCadastro;
 	private JButton btnCancelar, btnConcluir; 
-	private JTextField txtNomeClien, txtTelefone, txtEmail;
+	private JTextField txtNomeClien, txtData, txtNomeAt;
 	private JPanel pnlCliente;
 	private JComboBox cbxOpcao;
 	
@@ -110,17 +115,17 @@ public class Atendimento extends Utils
 		pnlCliente.add(txtNomeClien);
 		txtNomeClien.setColumns(10);
 		
-		txtTelefone = new JTextField();
-		txtTelefone.setFont(new Font("Georgia", Font.PLAIN, 14));
-		txtTelefone.setColumns(10);
-		txtTelefone.setBounds(225, 108, 305, 20);
-		pnlCliente.add(txtTelefone);
+		txtData = new JTextField();
+		txtData.setFont(new Font("Georgia", Font.PLAIN, 14));
+		txtData.setColumns(10);
+		txtData.setBounds(225, 108, 305, 20);
+		pnlCliente.add(txtData);
 		
-		txtEmail = new JTextField();
-		txtEmail.setFont(new Font("Georgia", Font.PLAIN, 14));
-		txtEmail.setColumns(10);
-		txtEmail.setBounds(225, 72, 305, 20);
-		pnlCliente.add(txtEmail);
+		txtNomeAt = new JTextField();
+		txtNomeAt.setFont(new Font("Georgia", Font.PLAIN, 14));
+		txtNomeAt.setColumns(10);
+		txtNomeAt.setBounds(225, 72, 305, 20);
+		pnlCliente.add(txtNomeAt);
 		
 		cbxOpcao = new JComboBox();
 		cbxOpcao.setBounds(282, 146, 187, 23);
@@ -143,28 +148,28 @@ public class Atendimento extends Utils
 		lblStatusDoAtendimento.setBounds(0, 427, 194, 23);
 		pnlCliente.add(lblStatusDoAtendimento);
 		
-		TextArea textArea = new TextArea();
-		textArea.setBounds(225, 184, 305, 204);
-		pnlCliente.add(textArea);
+		final Label lblStatus = new Label("Sem status");
+		lblStatus.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblStatus.setBounds(225, 427, 331, 22);
+		pnlCliente.add(lblStatus);
 		
-		Label label = new Label("Sem status");
-		label.setFont(new Font("Dialog", Font.PLAIN, 18));
-		label.setBounds(225, 427, 331, 22);
-		pnlCliente.add(label);
+		final JTextArea cbxObs = new JTextArea();
+		cbxObs.setBounds(225, 180, 305, 200);
+		pnlCliente.add(cbxObs);
+		
+		Border border = BorderFactory.createLineBorder(Color.BLACK);
+		cbxObs.setBorder(border);
 		
 		btnCancelar = new JButton("Cancelar");
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try 
 				{
-					if (podeConcluirIn) JOptionPane.showMessageDialog(null, "Inclusão Cancelado");
-					else if (podeConcluirAlt) JOptionPane.showMessageDialog(null, "Alteração Cancelada");
+					limparCampos();
+					lblStatus.setText("Sem Status");
+					cbxObs.setText("");
+					cbxOpcao.setSelectedIndex(0);
 					
-					printInfo(Utils.clien.getCliente_DBO(clienteAux));
-					podeConcluirAlt = podeConcluirIn = false;
-					
-					mudaBotaoTxt(true);
-					mudaBotaoPrint(true, true, true, true);
 				} catch (Exception e1) {System.err.println(e1.getMessage());}
 			}
 		});
@@ -175,7 +180,7 @@ public class Atendimento extends Utils
 		btnConcluir = new JButton("Concluir");
 		btnConcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (podeConcluirIn)
+				if (podeConcluir())
 				{
 					int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
 					
@@ -184,14 +189,12 @@ public class Atendimento extends Utils
 						try
 						{
 							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast("").getCodClien()+1, txtNomeClien.getText(),
-									                                 txtEmail.getText(), txtTelefone.getText()));
+									                                 txtNomeAt.getText(), txtData.getText()));
 							printInfo(Utils.clien.getLast(""));
 							
 							mudaBotaoTxt(true);
 							mudaBotaoPrint(true, true, false, false);
 
-							podeConcluirIn = false;
-							
 							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
 						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
 					}
@@ -206,13 +209,12 @@ public class Atendimento extends Utils
 						try
 						{
 							Utils.clien.alterarClien(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
-									                                 txtEmail.getText(), txtTelefone.getText()));
+									                                 txtNomeAt.getText(), txtData.getText()));
 							printInfo(Utils.clien.getCliente_DBO(clienteAux));
 							
 							mudaBotaoTxt(true);
 							mudaBotaoPrint(true, true, true, true);
 							
-//							btnAlterar.setText("Alterar");
 							podeConcluirAlt = false;
 							
 							JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
@@ -225,19 +227,31 @@ public class Atendimento extends Utils
 					try
 					{
 						Utils.clien.getCliente_DBO(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
-								                                   txtEmail.getText(), txtTelefone.getText()));
+								                                   txtNomeAt.getText(), txtData.getText()));
 						printInfo(Utils.clien.getCliente_DBO(clienteAux));
 						
 						mudaBotaoTxt(true);
 						mudaBotaoPrint(true, true, true, true);
 						
-//						btnAlterar.setText("Alterar");
 						podeConcluirAlt = false;
 						
 						JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
 					}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
 				}
 			}
+
+			private boolean podeConcluir() {			
+				
+				
+				if(txtNomeClien.getText() != "" && txtNomeAt.getText() != "" && txtData.getText() != "" && cbxObs.getText() != "")
+					return true;
+				return false;
+				
+				
+				
+			}
+			
+			
 		});
 		btnConcluir.setFont(new Font("Consolas", Font.PLAIN, 16));
 		btnConcluir.setBounds(252, 599, 106, 23);
@@ -274,8 +288,8 @@ public class Atendimento extends Utils
 	{
 		
 		txtNomeClien.setEditable(!_qual);
-		txtEmail.setEditable(!_qual);
-		txtTelefone.setEditable(!_qual);
+		txtNomeAt.setEditable(!_qual);
+		txtData.setEditable(!_qual);
 		
 //		btnInserir.setEnabled(_qual);
 //		btnExcluir.setEnabled(_qual);
@@ -292,8 +306,8 @@ public class Atendimento extends Utils
 	private void limparCampos() 
 	{
 		txtNomeClien.setText("");
-		txtEmail.setText("");
-		txtTelefone.setText("");
+		txtNomeAt.setText("");
+		txtData.setText("");
 	}
 
 	private void mudaBotaoPrint(boolean _qualPrim, boolean _qualAnt, boolean _qualProx, boolean _qualUlt)
