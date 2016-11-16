@@ -188,13 +188,14 @@ public class Atendimento extends Utils
 					{
 						try
 						{
-							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast("").getCodClien()+1, txtNomeClien.getText(),
-									                                 txtNomeAt.getText(), txtData.getText()));
+							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast("").getCodClien()+1, txtNomeClien.getText(), txtNomeAt.getText(), txtData.getText()));
+
 							printInfo(Utils.clien.getLast(""));
 							
 							mudaBotaoTxt(true);
 							mudaBotaoPrint(true, true, false, false);
-
+							podeConcluirIn = false;
+							
 							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
 						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
 					}
