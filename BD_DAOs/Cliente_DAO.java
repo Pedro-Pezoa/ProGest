@@ -5,10 +5,13 @@ import java.sql.SQLException;
 import BD_Basicos.MeuPreparedStatement;
 import BD_Basicos.MeuResultSet;
 import BD_DBOs.Cliente_DBO;
+import Tipos.Elemento;
+import Tipos.ListaDupla;
 
 public class Cliente_DAO 
 {
 	protected MeuPreparedStatement bd;
+	protected String sql;
 	
 	//-------------------------------------------------------------------------------------------------------------------------------//
     //-------------------------------------------------------------Construtor--------------------------------------------------------//
@@ -18,6 +21,7 @@ public class Cliente_DAO
 	{
 		if (_novoBd == null) throw new Exception("BD Inválido");
 		this.bd = _novoBd;
+		this.sql = "select * from ClientePG ";
 	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------------//
@@ -48,15 +52,13 @@ public class Cliente_DAO
         return cliente;
     }
 
-    public MeuResultSet getCliente_DAO() throws Exception
+    public MeuResultSet getCliente_DAO(String _ordenar) throws Exception
     {
         MeuResultSet result = null;
 
         try
         {
-            String sql = "select * from ClientePG";
-
-            bd.prepareStatement (sql);
+            bd.prepareStatement (this.sql + _ordenar);
             result = (MeuResultSet)bd.executeQuery();
         }
         catch (SQLException erro){throw new Exception ("Erro ao recuperar a tabela Cliente");}
@@ -64,18 +66,18 @@ public class Cliente_DAO
         return result;
     }
     
-    public Cliente_DBO getFirst() throws Exception
+    public Cliente_DBO getFirst(String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
         return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
                                result.getString("emailCliente"), result.getString("telefone"));
     }
     
-    public Cliente_DBO getLast() throws Exception
+    public Cliente_DBO getLast(String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.afterLast();
         result.previous();
         
@@ -83,9 +85,9 @@ public class Cliente_DAO
                                result.getString("emailCliente"), result.getString("telefone"));
     }
     
-    public Cliente_DBO getProx(int _codClien) throws Exception
+    public Cliente_DBO getProx(int _codClien, String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
         while (!result.isLast())
@@ -101,9 +103,9 @@ public class Cliente_DAO
         return null;
     }
     
-    public Cliente_DBO getAnt(int _codClien) throws Exception
+    public Cliente_DBO getAnt(int _codClien, String _ordenar) throws Exception
     {
-    	MeuResultSet result = this.getCliente_DAO();
+    	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
         while (!result.isLast())
@@ -224,4 +226,59 @@ public class Cliente_DAO
 
         return false;
     }
+
+	public ListaDupla<Cliente_DBO> getClientes(String _nome, String _email, String _tel) throws Exception 
+	{
+		int i = 1;
+		String sql = "select * from ClientePG where";
+		boolean podeNome = false, podeEmail = false, podeTel = false;
+		ListaDupla<Cliente_DBO> clien = new ListaDupla<Cliente_DBO>();
+		
+		try
+        {
+			if (_nome != null && !_nome.equals("")) 
+			{
+				_nome = "%" + _nome + "%";
+				sql += " nomeCliente like ?";
+				podeNome = true;
+			}
+			if (_email != null && !_email.equals("")) 
+			{
+				_email = "%" + _email + "%";
+				if (podeNome)
+					sql += " and emailCliente like ?";
+				else
+					sql += " emailCliente like ?";
+				podeEmail = true;
+			}
+			if (_tel != null && !_tel.equals("")) 
+			{
+				_tel = "%" + _tel + "%";
+				if (podeNome || podeEmail)
+					sql += " and telefone like ?";
+				else
+					sql += " telefone like ?";
+				podeTel = true;
+			}
+
+			bd.prepareStatement(sql);
+            if (podeNome) bd.setString(i++, _nome);
+            if (podeEmail) bd.setString(i++, _email);
+            if (podeTel) bd.setString(i, _tel);
+
+            MeuResultSet result = (MeuResultSet)bd.executeQuery();
+            result.next();
+            
+            if (result.getString("nomeCliente") == null || result.getString("nomeCliente").equals("")) return null;
+            while (!result.isAfterLast())
+            {
+            	clien.incluirNoFim(new Elemento<Cliente_DBO>(new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
+	                                                                         result.getString("emailCliente"), result.getString("telefone"))));
+            	result.next();
+            }
+        }
+        catch (SQLException erro){return null;}
+
+        return clien;
+	}
 }
