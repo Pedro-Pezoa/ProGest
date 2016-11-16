@@ -73,7 +73,7 @@ public class Atendimento extends Utils
 				mudaBotaoPrint(false, false, true, true);
 				try 
 				{
-					Cliente_DBO cliente = Utils.clien.getFirst();
+					Cliente_DBO cliente = Utils.clien.getFirst("");
 					printInfo(cliente);
 					clienteAux = cliente;
 				} catch (Exception e) {System.err.println(e.getMessage());}
@@ -105,21 +105,18 @@ public class Atendimento extends Utils
 		pnlCliente.add(lblTelefone);
 		
 		txtNomeClien = new JTextField();
-		txtNomeClien.setEditable(false);
 		txtNomeClien.setFont(new Font("Georgia", Font.PLAIN, 14));
 		txtNomeClien.setBounds(225, 36, 305, 20);
 		pnlCliente.add(txtNomeClien);
 		txtNomeClien.setColumns(10);
 		
 		txtTelefone = new JTextField();
-		txtTelefone.setEditable(false);
 		txtTelefone.setFont(new Font("Georgia", Font.PLAIN, 14));
 		txtTelefone.setColumns(10);
 		txtTelefone.setBounds(225, 108, 305, 20);
 		pnlCliente.add(txtTelefone);
 		
 		txtEmail = new JTextField();
-		txtEmail.setEditable(false);
 		txtEmail.setFont(new Font("Georgia", Font.PLAIN, 14));
 		txtEmail.setColumns(10);
 		txtEmail.setBounds(225, 72, 305, 20);
@@ -172,7 +169,6 @@ public class Atendimento extends Utils
 			}
 		});
 		btnCancelar.setFont(new Font("Consolas", Font.PLAIN, 16));
-		btnCancelar.setEnabled(false);
 		btnCancelar.setBounds(473, 599, 106, 23);
 		frmCadastro.getContentPane().add(btnCancelar);
 		
@@ -187,14 +183,13 @@ public class Atendimento extends Utils
 					{
 						try
 						{
-							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast().getCodClien()+1, txtNomeClien.getText(),
+							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast("").getCodClien()+1, txtNomeClien.getText(),
 									                                 txtEmail.getText(), txtTelefone.getText()));
-							printInfo(Utils.clien.getLast());
+							printInfo(Utils.clien.getLast(""));
 							
 							mudaBotaoTxt(true);
 							mudaBotaoPrint(true, true, false, false);
-							
-//							btnInserir.setText("Inserir");
+
 							podeConcluirIn = false;
 							
 							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
@@ -245,7 +240,6 @@ public class Atendimento extends Utils
 			}
 		});
 		btnConcluir.setFont(new Font("Consolas", Font.PLAIN, 16));
-		btnConcluir.setEnabled(false);
 		btnConcluir.setBounds(252, 599, 106, 23);
 		frmCadastro.getContentPane().add(btnConcluir);
 		
