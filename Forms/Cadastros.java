@@ -32,9 +32,9 @@ public class Cadastros extends Utils
 	private JLabel lblCodigoCliente;
 	private JPanel pnlCliente;
 	
-	private boolean ehClien, podeConcluirIn, podeConcluirAlt, podeConcluirBusc, estaBuscando;
+	private boolean ehClien, ehAten, podeConcluirIn, podeConcluirAlt, podeConcluirBusc, estaBuscando;
 	private Cliente_DBO clienteAux;
-	private JLabel lblOrdenarPor;
+	private Atendimento_DBO atendenteAux;
 	private JRadioButton rdbtnNome, rdbtnEmail, rdbtnTelefone, rdbtnCodigo;
 	private String qualOrdena;
 	
@@ -74,9 +74,12 @@ public class Cadastros extends Utils
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				ehClien = true;
-				podeConcluirIn = podeConcluirAlt = podeConcluirBusc = estaBuscando = false;
+				podeConcluirIn = podeConcluirAlt = podeConcluirBusc = estaBuscando = ehAten = false;
 				mudaBotaoPrint(false, false, true, true);
-				qualOrdena = "order by codCliente";
+				
+				if (ehClien) qualOrdena = "order by codCliente";
+				else qualOrdena = "order by codAtendimento";
+				
 				try 
 				{
 					Cliente_DBO cliente = Utils.clien.getFirst(qualOrdena);
@@ -189,15 +192,18 @@ public class Cadastros extends Utils
 		btnPrim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mudaBotaoPrint(false, false, true, true);
-				try 
+				if (ehClien)
 				{
-					if (estaBuscando)
+					try 
 					{
-						lista.setAtual(lista.getInicio());
-						printInfo(lista.getAtual().getInfo());
-					}
-					else printInfo(Utils.clien.getFirst(qualOrdena));
-				} catch (Exception e) {System.err.println(e.getMessage());}
+						if (estaBuscando)
+						{
+							lista.setAtual(lista.getInicio());
+							printInfo(lista.getAtual().getInfo());
+						}
+						else printInfo(Utils.clien.getFirst(qualOrdena));
+					} catch (Exception e) {System.err.println(e.getMessage());}
+				}
 			}
 		});
 		btnPrim.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -209,22 +215,25 @@ public class Cadastros extends Utils
 			public void actionPerformed(ActionEvent arg0) {
 				try 
 				{
-					if (estaBuscando)
+					if (ehClien)
 					{
-						lista.setAtual(lista.getAtual().getAnt());
-						printInfo(lista.getAtual().getInfo());
-						if (lista.getAtual().equals(lista.getInicio())) mudaBotaoPrint(false, false, true, true);
-					}
-					else
-					{
-						Cliente_DBO clien = Utils.clien.getAnt(Integer.parseInt(lblCodigoCliente.getText()), qualOrdena);
-						if (clien != null)
+						if (estaBuscando)
 						{
-							printInfo(clien);
-							mudaBotaoPrint(true, true, true, true);
-							if (clien.equals(Utils.clien.getFirst(qualOrdena)))
-								mudaBotaoPrint(false, false, true, true);
+							lista.setAtual(lista.getAtual().getAnt());
+							printInfo(lista.getAtual().getInfo());
+							if (lista.getAtual().equals(lista.getInicio())) mudaBotaoPrint(false, false, true, true);
 						}
+						else
+						{
+							Cliente_DBO clien = Utils.clien.getAnt(Integer.parseInt(lblCodigoCliente.getText()), qualOrdena);
+							if (clien != null)
+							{
+								printInfo(clien);
+								mudaBotaoPrint(true, true, true, true);
+								if (clien.equals(Utils.clien.getFirst(qualOrdena)))
+									mudaBotaoPrint(false, false, true, true);
+							}
+						}	
 					}
 				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
@@ -238,21 +247,24 @@ public class Cadastros extends Utils
 			public void actionPerformed(ActionEvent arg0) {
 				try 
 				{
-					if (estaBuscando)
+					if (ehClien)
 					{
-						lista.setAtual(lista.getAtual().getProx());
-						printInfo(lista.getAtual().getInfo());
-						if (lista.getAtual().equals(lista.getFim())) mudaBotaoPrint(true, true, false, false);
-					}
-					else
-					{
-						Cliente_DBO clien = Utils.clien.getProx(Integer.parseInt(lblCodigoCliente.getText()), qualOrdena);
-						if (clien != null)
+						if (estaBuscando)
 						{
-							printInfo(clien);
-							mudaBotaoPrint(true, true, true, true);
-							if (clien.equals(Utils.clien.getLast(qualOrdena)))
-								mudaBotaoPrint(true, true, false, false);
+							lista.setAtual(lista.getAtual().getProx());
+							printInfo(lista.getAtual().getInfo());
+							if (lista.getAtual().equals(lista.getFim())) mudaBotaoPrint(true, true, false, false);
+						}
+						else
+						{
+							Cliente_DBO clien = Utils.clien.getProx(Integer.parseInt(lblCodigoCliente.getText()), qualOrdena);
+							if (clien != null)
+							{
+								printInfo(clien);
+								mudaBotaoPrint(true, true, true, true);
+								if (clien.equals(Utils.clien.getLast(qualOrdena)))
+									mudaBotaoPrint(true, true, false, false);
+							}
 						}
 					}
 				} catch (Exception e) {System.err.println(e.getMessage());}
@@ -268,13 +280,16 @@ public class Cadastros extends Utils
 				mudaBotaoPrint(true, true, false, false);
 				try 
 				{
-					if (estaBuscando)
+					if (ehClien)
 					{
-						lista.setAtual(lista.getFim());
-						printInfo(lista.getAtual().getInfo());
+						if (estaBuscando)
+						{
+							lista.setAtual(lista.getFim());
+							printInfo(lista.getAtual().getInfo());
+						}
+						else printInfo(Utils.clien.getLast(qualOrdena));
 					}
-					else printInfo(Utils.clien.getLast(qualOrdena));
-				} catch (Exception e) {System.err.println(e.getMessage());}
+				} catch (Exception e) {System.err.println(e.getMessage());}	
 			}
 		});
 		btnFim.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -295,10 +310,7 @@ public class Cadastros extends Utils
 		btnAtendimento = new JButton("Atendimento");
 		btnAtendimento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ehClien = false;
-				btnCliente.setEnabled(true);
-				pnlCliente.setVisible(false);
-				btnAtendimento.setEnabled(false);
+				ehQualTabela(false);
 			}
 		});
 		btnAtendimento.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -361,16 +373,30 @@ public class Cadastros extends Utils
 			public void actionPerformed(ActionEvent e) {
 				try 
 				{
-					if (!estaBuscando)
+					if (ehClien)
 					{
-						if (podeConcluirIn) JOptionPane.showMessageDialog(null, "Inclusão Cancelado");
-						else if (podeConcluirAlt) JOptionPane.showMessageDialog(null, "Alteração Cancelada");
-						
-						printInfo(Utils.clien.getCliente_DBO(clienteAux));
-						podeConcluirAlt = podeConcluirIn = false;
-						
-						mudaBotaoTxt(true);
-						mudaBotaoPrint(true, true, true, true);
+						if (!estaBuscando)
+						{
+							if (podeConcluirIn) JOptionPane.showMessageDialog(null, "Inclusão Cancelado");
+							else if (podeConcluirAlt) JOptionPane.showMessageDialog(null, "Alteração Cancelada");
+							
+							printInfo(Utils.clien.getCliente_DBO(clienteAux));
+							podeConcluirAlt = podeConcluirIn = false;
+							
+							mudaBotaoTxt(true);
+							mudaBotaoPrint(true, true, true, true);
+						}
+						else
+						{
+							estaBuscando = false;
+							Cliente_DBO cliente = Utils.clien.getFirst(qualOrdena);
+							printInfo(cliente);
+							clienteAux = cliente;
+							
+							podeConcluirIn = podeConcluirAlt = podeConcluirBusc = estaBuscando = false;
+							mudaBotaoPrint(false, false, true, true);
+							mudaBotaoTxt(true);
+						}
 					}
 				} catch (Exception e1) {System.err.println(e1.getMessage());}
 			}
@@ -380,7 +406,7 @@ public class Cadastros extends Utils
 		btnCancelar.setBounds(319, 113, 222, 23);
 		frmCadastro.getContentPane().add(btnCancelar);
 		
-		lblOrdenarPor = new JLabel("Ordenar por:");
+		JLabel lblOrdenarPor = new JLabel("Ordenar por:");
 		lblOrdenarPor.setFont(new Font("Georgia", Font.PLAIN, 18));
 		lblOrdenarPor.setBounds(87, 143, 106, 23);
 		frmCadastro.getContentPane().add(lblOrdenarPor);
@@ -388,72 +414,75 @@ public class Cadastros extends Utils
 		btnConcluir = new JButton("Concluir");
 		btnConcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (podeConcluirIn)
+				if (ehClien)
 				{
-					int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
-					
-					if (result == 0)
+					if (podeConcluirIn)
 					{
-						try
+						int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
+						
+						if (result == 0)
 						{
-							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast(qualOrdena).getCodClien()+1, txtNomeClien.getText(),
-									                                 txtEmail.getText(), txtTelefone.getText()));
-							printInfo(Utils.clien.getLast(qualOrdena));
-							
-							mudaBotaoTxt(true);
-							mudaBotaoPrint(true, true, false, false);
-							
-							btnInserir.setText("Inserir");
-							podeConcluirIn = false;
-							
-							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
-						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
-					}
-				}
-				
-				else if (podeConcluirAlt)
-				{
-					int result = JOptionPane.showConfirmDialog(null, "Deseja alterar este Cliente:");	
-					
-					if (result == 0)
-					{
-						try
-						{
-							Utils.clien.alterarClien(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
-									                                 txtEmail.getText(), txtTelefone.getText()));
-							printInfo(Utils.clien.getCliente_DBO(clienteAux));
-							
-							mudaBotaoTxt(true);
-							mudaBotaoPrint(true, true, true, true);
-							
-							btnAlterar.setText("Alterar");
-							podeConcluirAlt = false;
-							
-							JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
-						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
-					}
-				}
-				
-				else if (podeConcluirBusc)
-				{
-					try
-					{
-						lista = Utils.clien.getClientes(txtNomeClien.getText(), txtEmail.getText(), txtTelefone.getText());
-						if (lista != null)
-						{
-							lista.setAtual(lista.getInicio());
-							printInfo(lista.getAtual().getInfo());
-							
-							if (lista.getFim().equals(lista.getInicio())) mudaBotaoPrint(false, false, false, false);
-							else mudaBotaoPrint(false, false, true, true);
-							
-							estaBuscando = true;
-							mudaBotaoTxt(true);
-							podeConcluirBusc = false;
-							JOptionPane.showMessageDialog(null, "Busca com Sucesso");
+							try
+							{
+								Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast(qualOrdena).getCodClien()+1, txtNomeClien.getText(),
+										                                 txtEmail.getText(), txtTelefone.getText()));
+								printInfo(Utils.clien.getLast(qualOrdena));
+								
+								mudaBotaoTxt(true);
+								mudaBotaoPrint(true, true, false, false);
+								
+								btnInserir.setText("Inserir");
+								podeConcluirIn = false;
+								
+								JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
+							}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
 						}
-						else JOptionPane.showMessageDialog(null, "Não houve resultados na busca feita");
-					}catch(Exception e2){System.err.println(e2.getMessage());}
+					}
+					
+					else if (podeConcluirAlt)
+					{
+						int result = JOptionPane.showConfirmDialog(null, "Deseja alterar este Cliente:");	
+						
+						if (result == 0)
+						{
+							try
+							{
+								Utils.clien.alterarClien(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
+										                                 txtEmail.getText(), txtTelefone.getText()));
+								printInfo(Utils.clien.getCliente_DBO(clienteAux));
+								
+								mudaBotaoTxt(true);
+								mudaBotaoPrint(true, true, true, true);
+								
+								btnAlterar.setText("Alterar");
+								podeConcluirAlt = false;
+								
+								JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
+							}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
+						}
+					}
+					
+					else if (podeConcluirBusc)
+					{
+						try
+						{
+							lista = Utils.clien.getClientes(txtNomeClien.getText(), txtEmail.getText(), txtTelefone.getText());
+							if (lista != null)
+							{
+								lista.setAtual(lista.getInicio());
+								printInfo(lista.getAtual().getInfo());
+								
+								if (lista.getFim().equals(lista.getInicio())) mudaBotaoPrint(false, false, false, false);
+								else mudaBotaoPrint(false, false, true, true);
+								
+								estaBuscando = true;
+								mudaBotaoTxt(true);
+								podeConcluirBusc = false;
+								JOptionPane.showMessageDialog(null, "Busca com Sucesso");
+							}
+							else JOptionPane.showMessageDialog(null, "Não houve resultados na busca feita");
+						}catch(Exception e2){System.err.println(e2.getMessage());}
+					}
 				}
 			}
 		});
@@ -466,13 +495,19 @@ public class Cadastros extends Utils
 		rdbtnNome.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				mudaBotaoOrdena('n');
-				qualOrdena = "order by nomeCliente";
-				try 
+				if (ehClien)
 				{
-					printInfo(Utils.clien.getFirst(qualOrdena));
-					mudaBotaoPrint(false, false, true, true);
-				} catch (Exception e1) {System.err.println(e1.getMessage());}
+					if (!podeConcluirAlt && !podeConcluirIn && !estaBuscando)
+					{
+						mudaBotaoOrdena('n');
+						qualOrdena = "order by nomeCliente";
+						try 
+						{
+							printInfo(Utils.clien.getFirst(qualOrdena));
+							mudaBotaoPrint(false, false, true, true);
+						} catch (Exception e1) {System.err.println(e1.getMessage());}
+					}
+				}
 			}
 		});
 		rdbtnNome.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -483,13 +518,19 @@ public class Cadastros extends Utils
 		rdbtnEmail.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				mudaBotaoOrdena('e');
-				qualOrdena = "order by emailCliente";
-				try 
+				if (ehClien)
 				{
-					printInfo(Utils.clien.getFirst(qualOrdena));
-					mudaBotaoPrint(false, false, true, true);
-				} catch (Exception e1) {System.err.println(e1.getMessage());}
+					if (!podeConcluirAlt && !podeConcluirIn && !estaBuscando)
+					{
+						mudaBotaoOrdena('e');
+						qualOrdena = "order by emailCliente";
+						try 
+						{
+							printInfo(Utils.clien.getFirst(qualOrdena));
+							mudaBotaoPrint(false, false, true, true);
+						} catch (Exception e1) {System.err.println(e1.getMessage());}
+					}
+				}
 			}
 		});
 		rdbtnEmail.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -500,13 +541,19 @@ public class Cadastros extends Utils
 		rdbtnTelefone.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				mudaBotaoOrdena('t');
-				qualOrdena = "order by telefone";
-				try 
+				if (ehClien)
 				{
-					printInfo(Utils.clien.getFirst(qualOrdena));
-					mudaBotaoPrint(false, false, true, true);
-				} catch (Exception e1) {System.err.println(e1.getMessage());}
+					if (!podeConcluirAlt && !podeConcluirIn && !estaBuscando)
+					{
+						mudaBotaoOrdena('t');
+						qualOrdena = "order by telefone";
+						try 
+						{
+							printInfo(Utils.clien.getFirst(qualOrdena));
+							mudaBotaoPrint(false, false, true, true);
+						} catch (Exception e1) {System.err.println(e1.getMessage());}
+					}
+				}
 			}
 		});
 		rdbtnTelefone.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -517,13 +564,19 @@ public class Cadastros extends Utils
 		rdbtnCodigo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				mudaBotaoOrdena('c');
-				qualOrdena = "order by codCliente";
-				try 
+				if (ehClien)
 				{
-					printInfo(Utils.clien.getFirst(qualOrdena));
-					mudaBotaoPrint(false, false, true, true);
-				} catch (Exception e1) {System.err.println(e1.getMessage());}
+					if (!podeConcluirAlt && !podeConcluirIn && !estaBuscando)
+					{
+						mudaBotaoOrdena('c');
+						qualOrdena = "order by codCliente";
+						try 
+						{
+							printInfo(Utils.clien.getFirst(qualOrdena));
+							mudaBotaoPrint(false, false, true, true);
+						} catch (Exception e1) {System.err.println(e1.getMessage());}
+					}
+				}
 			}
 		});
 		rdbtnCodigo.setSelected(true);
@@ -566,33 +619,44 @@ public class Cadastros extends Utils
 			{
 				Cliente_DBO cliente = Utils.clien.getFirst(qualOrdena);
 				printInfo(cliente);
+				clienteAux = cliente;
 			} catch (Exception e) {e.getMessage();}
 		}
 	}
 	
 	private void mudaBotaoTxt(boolean _qual)
 	{
-		
-		txtNomeClien.setEditable(!_qual);
-		txtEmail.setEditable(!_qual);
-		txtTelefone.setEditable(!_qual);
-		
-		btnInserir.setEnabled(_qual && !estaBuscando);
-		btnExcluir.setEnabled(_qual && !estaBuscando);
-		btnAlterar.setEnabled(_qual && !estaBuscando);
-		btnBuscar.setEnabled(_qual);
-		
-		btnCancelar.setEnabled(!_qual || estaBuscando);
-		btnConcluir.setEnabled(!_qual);
-
-		btnAtendimento.setEnabled(_qual);
+		if (ehClien)
+		{
+			txtNomeClien.setEditable(!_qual);
+			txtEmail.setEditable(!_qual);
+			txtTelefone.setEditable(!_qual);
+			
+			btnInserir.setEnabled(_qual && !estaBuscando);
+			btnExcluir.setEnabled(_qual && !estaBuscando);
+			btnAlterar.setEnabled(_qual && !estaBuscando);
+			btnBuscar.setEnabled(_qual);
+			
+			btnCancelar.setEnabled(!_qual || estaBuscando);
+			btnConcluir.setEnabled(!_qual);
+	
+			btnAtendimento.setEnabled(_qual);
+			
+			rdbtnCodigo.setEnabled(_qual);
+			rdbtnEmail.setEnabled(_qual);
+			rdbtnNome.setEnabled(_qual);
+			rdbtnTelefone.setEnabled(_qual);
+		}
 	}
 	
 	private void limparCampos() 
 	{
-		txtNomeClien.setText("");
-		txtEmail.setText("");
-		txtTelefone.setText("");
+		if (ehClien)
+		{
+			txtNomeClien.setText("");
+			txtEmail.setText("");
+			txtTelefone.setText("");
+		}
 	}
 
 	private void mudaBotaoPrint(boolean _qualPrim, boolean _qualAnt, boolean _qualProx, boolean _qualUlt)
@@ -605,16 +669,19 @@ public class Cadastros extends Utils
 	
 	private void mudaBotaoOrdena(char _qual)
 	{
-		if (_qual == 'c') rdbtnCodigo.setSelected(true);
-		else rdbtnCodigo.setSelected(false);
-		
-		if (_qual == 'n') rdbtnNome.setSelected(true);
-		else rdbtnNome.setSelected(false);
-		
-		if (_qual == 'e') rdbtnEmail.setSelected(true);
-		else rdbtnEmail.setSelected(false);
-		
-		if (_qual == 't') rdbtnTelefone.setSelected(true);
-		else rdbtnTelefone.setSelected(false);
+		if (ehClien)
+		{
+			if (_qual == 'c') rdbtnCodigo.setSelected(true);
+			else rdbtnCodigo.setSelected(false);
+			
+			if (_qual == 'n') rdbtnNome.setSelected(true);
+			else rdbtnNome.setSelected(false);
+			
+			if (_qual == 'e') rdbtnEmail.setSelected(true);
+			else rdbtnEmail.setSelected(false);
+			
+			if (_qual == 't') rdbtnTelefone.setSelected(true);
+			else rdbtnTelefone.setSelected(false);
+		}
 	}
 }
