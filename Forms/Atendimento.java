@@ -86,7 +86,7 @@ public class Atendimento extends Utils
 		});
 		frmCadastro.setTitle("Registro de Atendimento");
 		frmCadastro.setBounds(100, 100, 649, 685);
-		frmCadastro.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmCadastro.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frmCadastro.getContentPane().setLayout(null);
 		
 		pnlCliente = new JPanel();

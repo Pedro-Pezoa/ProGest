@@ -24,32 +24,26 @@ import java.awt.event.WindowEvent;
 import javax.swing.JRadioButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JTextPane;
-import javax.swing.border.Border;
 import javax.swing.JTextArea;
 
 public class Cadastros extends Utils
 {
 	private JFrame frmCadastro;
 	private JButton btnCliente, btnAtendimento, btnCancelar, btnInserir, btnBuscar,
-	                btnFim, btnPrim, btnAnt, btnProx, btnExcluir, btnAlterar, btnConcluir; 
-	private JTextField txtNomeClien, txtTelefone, txtEmail;
-	private JLabel lblCodigoCliente;
+	                btnFim, btnPrim, btnAnt, btnProx, btnExcluir, btnAlterar, btnConcluir;
+	private JTextField txtNomeClien, txtTelefone, txtEmail, txtTipo, txtData, txtNomeAtend, txtStatus;
+	private JLabel lblCodigoCliente, lblCodAtend, lblStatusDoAtendimento, lblObservaoDoCliente, lblCodClien2, lblCdigoAtendimento, lblCodClienAux;
 	private JPanel pnlCliente, pnlAtend;
+	private JTextArea txtObservacao;
 	
-	private boolean ehClien, ehAten, podeConcluirIn, podeConcluirAlt, podeConcluirBusc, estaBuscando;
+	private boolean ehClien, podeConcluirIn, podeConcluirAlt, podeConcluirBusc, estaBuscando;
 	private Cliente_DBO clienteAux;
 	private Atendimento_DBO atendenteAux;
-	private JRadioButton rdbtnNome, rdbtnEmail, rdbtnTelefone, rdbtnCodigo;
+	private JRadioButton rdbtnNome, rdbtnEmail, rdbtnTelefone, rdbtnCodigo, rdbtnCodAtend, rdbtnNomeAtend, rdbtnData, rdbtnStatus;
 	private String qualOrdena;
 	
-	private ListaDupla<Cliente_DBO> lista;
-	private JTextField txtTipo;
-	private JTextField txtData;
-	private JTextField txtNomeAtend;
-	private JTextField txtStatus;
-	private JLabel lblStatusDoAtendimento;
-	private JLabel lblObservaoDoCliente;
+	private ListaDupla<Cliente_DBO> listaCliente;
+	private ListaDupla<Atendimento_DBO> listaAtend;
 	
 	/**
 	 * Launch the application.
@@ -85,7 +79,7 @@ public class Cadastros extends Utils
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				ehClien = true;
-				podeConcluirIn = podeConcluirAlt = podeConcluirBusc = estaBuscando = ehAten = false;
+				podeConcluirIn = podeConcluirAlt = podeConcluirBusc = estaBuscando = false;
 				
 				mudaBotaoPrint(false, false, true, true);
 				qualOrdena = "order by codCliente";
@@ -120,6 +114,11 @@ public class Cadastros extends Utils
 						mudaBotaoPrint(false, false, false, false);
 						
 						podeConcluirIn = true;
+					}
+					else
+					{
+						Atendimento at = new Atendimento();
+						at.main(null);
 					}
 				}catch (Exception e1) {e1.getMessage();}
 		}});
@@ -202,18 +201,28 @@ public class Cadastros extends Utils
 		btnPrim.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mudaBotaoPrint(false, false, true, true);
-				if (ehClien)
+				try 
 				{
-					try 
+					if (ehClien)
 					{
 						if (estaBuscando)
 						{
-							lista.setAtual(lista.getInicio());
-							printInfo(lista.getAtual().getInfo());
+							listaCliente.setAtual(listaCliente.getInicio());
+							printInfo(listaCliente.getAtual().getInfo());
 						}
 						else printInfo(Utils.clien.getFirst(qualOrdena));
-					} catch (Exception e) {System.err.println(e.getMessage());}
-				}
+					}
+					
+					else
+					{
+						if (estaBuscando)
+						{
+							listaAtend.setAtual(listaAtend.getInicio());
+							printInfo(listaAtend.getAtual().getInfo());
+						}
+						else printInfo(Utils.aten.getFirst(qualOrdena));
+					}
+				} catch (Exception e) {System.err.println(e.getMessage());}
 			}
 		});
 		btnPrim.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -229,9 +238,9 @@ public class Cadastros extends Utils
 					{
 						if (estaBuscando)
 						{
-							lista.setAtual(lista.getAtual().getAnt());
-							printInfo(lista.getAtual().getInfo());
-							if (lista.getAtual().equals(lista.getInicio())) mudaBotaoPrint(false, false, true, true);
+							listaCliente.setAtual(listaCliente.getAtual().getAnt());
+							printInfo(listaCliente.getAtual().getInfo());
+							if (listaCliente.getAtual().equals(listaCliente.getInicio())) mudaBotaoPrint(false, false, true, true);
 							else mudaBotaoPrint(true, true, true, true);
 						}
 						else
@@ -242,6 +251,28 @@ public class Cadastros extends Utils
 								printInfo(clien);
 								mudaBotaoPrint(true, true, true, true);
 								if (clien.equals(Utils.clien.getFirst(qualOrdena)))
+									mudaBotaoPrint(false, false, true, true);
+							}
+						}	
+					}
+					
+					else
+					{
+						if (estaBuscando)
+						{
+							listaAtend.setAtual(listaAtend.getAtual().getAnt());
+							printInfo(listaAtend.getAtual().getInfo());
+							if (listaAtend.getAtual().equals(listaAtend.getInicio())) mudaBotaoPrint(false, false, true, true);
+							else mudaBotaoPrint(true, true, true, true);
+						}
+						else
+						{
+							Atendimento_DBO aten = Utils.aten.getAnt(Integer.parseInt(lblCodAtend.getText()), qualOrdena);
+							if (aten != null)
+							{
+								printInfo(aten);
+								mudaBotaoPrint(true, true, true, true);
+								if (aten.equals(Utils.aten.getFirst(qualOrdena)))
 									mudaBotaoPrint(false, false, true, true);
 							}
 						}	
@@ -262,9 +293,9 @@ public class Cadastros extends Utils
 					{
 						if (estaBuscando)
 						{
-							lista.setAtual(lista.getAtual().getProx());
-							printInfo(lista.getAtual().getInfo());
-							if (lista.getAtual().equals(lista.getFim())) mudaBotaoPrint(true, true, false, false);
+							listaCliente.setAtual(listaCliente.getAtual().getProx());
+							printInfo(listaCliente.getAtual().getInfo());
+							if (listaCliente.getAtual().equals(listaCliente.getFim())) mudaBotaoPrint(true, true, false, false);
 							else mudaBotaoPrint(true, true, true, true);
 						}
 						else
@@ -275,6 +306,28 @@ public class Cadastros extends Utils
 								printInfo(clien);
 								mudaBotaoPrint(true, true, true, true);
 								if (clien.equals(Utils.clien.getLast(qualOrdena)))
+									mudaBotaoPrint(true, true, false, false);
+							}
+						}
+					}
+					
+					else
+					{
+						if (estaBuscando)
+						{
+							listaAtend.setAtual(listaAtend.getAtual().getProx());
+							printInfo(listaAtend.getAtual().getInfo());
+							if (listaAtend.getAtual().equals(listaAtend.getFim())) mudaBotaoPrint(true, true, false, false);
+							else mudaBotaoPrint(true, true, true, true);
+						}
+						else
+						{
+							Atendimento_DBO aten = Utils.aten.getProx(Integer.parseInt(lblCodAtend.getText()), qualOrdena);
+							if (aten != null)
+							{
+								printInfo(aten);
+								mudaBotaoPrint(true, true, true, true);
+								if (aten.equals(Utils.aten.getLast(qualOrdena)))
 									mudaBotaoPrint(true, true, false, false);
 							}
 						}
@@ -296,10 +349,20 @@ public class Cadastros extends Utils
 					{
 						if (estaBuscando)
 						{
-							lista.setAtual(lista.getFim());
-							printInfo(lista.getAtual().getInfo());
+							listaCliente.setAtual(listaCliente.getFim());
+							printInfo(listaCliente.getAtual().getInfo());
 						}
 						else printInfo(Utils.clien.getLast(qualOrdena));
+					}
+					
+					else
+					{
+						if (estaBuscando)
+						{
+							listaAtend.setAtual(listaAtend.getFim());
+							printInfo(listaAtend.getAtual().getInfo());
+						}
+						else printInfo(Utils.aten.getLast(qualOrdena));
 					}
 				} catch (Exception e) {System.err.println(e.getMessage());}	
 			}
@@ -340,23 +403,23 @@ public class Cadastros extends Utils
 		label.setBounds(40, 0, 106, 23);
 		pnlAtend.add(label);
 		
-		JRadioButton rdbtnCodAtend = new JRadioButton("C\u00F3digo");
+		rdbtnCodAtend = new JRadioButton("C\u00F3digo");
 		rdbtnCodAtend.setSelected(true);
 		rdbtnCodAtend.setFont(new Font("Consolas", Font.PLAIN, 16));
 		rdbtnCodAtend.setBounds(156, 3, 79, 23);
 		pnlAtend.add(rdbtnCodAtend);
 		
-		JRadioButton rdbtnNomeAtend = new JRadioButton("Nome");
+		rdbtnNomeAtend = new JRadioButton("Nome");
 		rdbtnNomeAtend.setFont(new Font("Consolas", Font.PLAIN, 16));
 		rdbtnNomeAtend.setBounds(237, 3, 61, 23);
 		pnlAtend.add(rdbtnNomeAtend);
 		
-		JRadioButton rdbtnData = new JRadioButton("Data");
+		rdbtnData = new JRadioButton("Data");
 		rdbtnData.setFont(new Font("Consolas", Font.PLAIN, 16));
 		rdbtnData.setBounds(300, 3, 71, 23);
 		pnlAtend.add(rdbtnData);
 		
-		JRadioButton rdbtnStatus = new JRadioButton("Status");
+		rdbtnStatus = new JRadioButton("Status");
 		rdbtnStatus.setFont(new Font("Consolas", Font.PLAIN, 16));
 		rdbtnStatus.setBounds(373, 3, 97, 23);
 		pnlAtend.add(rdbtnStatus);
@@ -391,28 +454,28 @@ public class Cadastros extends Utils
 		pnlAtend.add(lblNomeDoAtendimento);
 		
 		txtNomeAtend = new JTextField();
-		txtNomeAtend.setFont(new Font("Georgia", Font.PLAIN, 14));
 		txtNomeAtend.setEditable(false);
+		txtNomeAtend.setFont(new Font("Georgia", Font.PLAIN, 14));
 		txtNomeAtend.setColumns(10);
 		txtNomeAtend.setBounds(207, 87, 263, 20);
 		pnlAtend.add(txtNomeAtend);
 		
-		JLabel lblCodAtend = new JLabel("---------------------------------------------------");
+		lblCodAtend = new JLabel("---------------------------------------------------");
 		lblCodAtend.setFont(new Font("Georgia", Font.PLAIN, 14));
 		lblCodAtend.setBounds(207, 33, 263, 14);
 		pnlAtend.add(lblCodAtend);
 		
-		JLabel lblCodClien2 = new JLabel("C\u00F3digo Cliente:");
+		lblCodClien2 = new JLabel("C\u00F3digo Cliente:");
 		lblCodClien2.setFont(new Font("Georgia", Font.PLAIN, 18));
 		lblCodClien2.setBounds(74, 63, 123, 14);
 		pnlAtend.add(lblCodClien2);
 		
-		JLabel lblCdigoAtendimento = new JLabel("C\u00F3digo Atendimento:");
+		lblCdigoAtendimento = new JLabel("C\u00F3digo Atendimento:");
 		lblCdigoAtendimento.setFont(new Font("Georgia", Font.PLAIN, 18));
 		lblCdigoAtendimento.setBounds(26, 34, 171, 14);
 		pnlAtend.add(lblCdigoAtendimento);
 		
-		JLabel lblCodClienAux = new JLabel("---------------------------------------------------");
+		lblCodClienAux = new JLabel("---------------------------------------------------");
 		lblCodClienAux.setFont(new Font("Georgia", Font.PLAIN, 14));
 		lblCodClienAux.setBounds(207, 58, 263, 14);
 		pnlAtend.add(lblCodClienAux);
@@ -434,7 +497,8 @@ public class Cadastros extends Utils
 		lblObservaoDoCliente.setBounds(14, 197, 183, 14);
 		pnlAtend.add(lblObservaoDoCliente);
 		
-		JTextArea txtObservacao = new JTextArea();
+		txtObservacao = new JTextArea();
+		txtObservacao.setLineWrap(true);
 		txtObservacao.setBounds(207, 196, 263, 189);
 		txtObservacao.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		pnlAtend.add(txtObservacao);
@@ -635,13 +699,13 @@ public class Cadastros extends Utils
 					{
 						if (podeConcluirBusc)
 						{
-							lista = Utils.clien.getClientes(txtNomeClien.getText(), txtEmail.getText(), txtTelefone.getText());
-							if (lista != null)
+							listaCliente = Utils.clien.getClientes(txtNomeClien.getText(), txtEmail.getText(), txtTelefone.getText());
+							if (listaCliente != null)
 							{
-								lista.setAtual(lista.getInicio());
-								printInfo(lista.getAtual().getInfo());
+								listaCliente.setAtual(listaCliente.getInicio());
+								printInfo(listaCliente.getAtual().getInfo());
 								
-								if (lista.getFim().equals(lista.getInicio())) mudaBotaoPrint(false, false, false, false);
+								if (listaCliente.getFim().equals(listaCliente.getInicio())) mudaBotaoPrint(false, false, false, false);
 								else mudaBotaoPrint(false, false, true, true);
 								
 								estaBuscando = true;
@@ -706,6 +770,16 @@ public class Cadastros extends Utils
 				txtEmail.setText(clien.getEmailClien());
 				txtTelefone.setText(clien.getTeleClien());
 			}
+			else
+			{
+				lblCodAtend.setText(aten.getCodAten()+"");
+				lblCodClienAux.setText(aten.getCodClien()+"");
+				txtNomeAtend.setText(aten.getNomeAten());
+				txtData.setText(Utils.dateToString(aten.getDataAten()));
+				txtTipo.setText(aten.getTipoeAten());
+				txtStatus.setText(aten.getStatusAten());
+				txtObservacao.setText(aten.getObsClien());
+			}
 		}
 	}
 	
@@ -716,8 +790,6 @@ public class Cadastros extends Utils
 			if (_qual)
 			{
 				ehClien = true;
-				ehAten = false;
-				
 				btnCliente.setEnabled(false);
 				btnAtendimento.setEnabled(true);
 				
@@ -733,8 +805,6 @@ public class Cadastros extends Utils
 			else
 			{
 				ehClien = false;
-				ehAten = true;
-				
 				btnCliente.setEnabled(true);
 				btnAtendimento.setEnabled(false);
 				
@@ -754,25 +824,38 @@ public class Cadastros extends Utils
 	{
 		if (ehClien)
 		{
+			btnAtendimento.setEnabled(_qual);
 			txtNomeClien.setEditable(!_qual);
 			txtEmail.setEditable(!_qual);
 			txtTelefone.setEditable(!_qual);
-			
-			btnInserir.setEnabled(_qual && !estaBuscando);
-			btnExcluir.setEnabled(_qual && !estaBuscando);
-			btnAlterar.setEnabled(_qual && !estaBuscando);
-			btnBuscar.setEnabled(_qual);
-			
-			btnCancelar.setEnabled(!_qual || estaBuscando);
-			btnConcluir.setEnabled(!_qual);
-	
-			btnAtendimento.setEnabled(_qual);
 			
 			rdbtnCodigo.setEnabled(_qual);
 			rdbtnEmail.setEnabled(_qual);
 			rdbtnNome.setEnabled(_qual);
 			rdbtnTelefone.setEnabled(_qual);
 		}
+		
+		else
+		{
+			txtNomeAtend.setEditable(!_qual);
+			txtData.setEditable(!_qual);
+			txtObservacao.setEditable(!_qual);
+			txtStatus.setEditable(!_qual);
+			txtTipo.setEditable(!_qual);
+			
+			btnCliente.setEnabled(_qual);
+			rdbtnCodAtend.setEnabled(_qual);
+			rdbtnNomeAtend.setEnabled(_qual);
+			rdbtnStatus.setEnabled(_qual);
+			rdbtnData.setEnabled(_qual);
+		}
+		btnInserir.setEnabled(_qual && !estaBuscando);
+		btnExcluir.setEnabled(_qual && !estaBuscando);
+		btnAlterar.setEnabled(_qual && !estaBuscando);
+		btnBuscar.setEnabled(_qual);
+		
+		btnCancelar.setEnabled(!_qual || estaBuscando);
+		btnConcluir.setEnabled(!_qual);
 	}
 	
 	private void limparCampos() 
@@ -782,6 +865,15 @@ public class Cadastros extends Utils
 			txtNomeClien.setText("");
 			txtEmail.setText("");
 			txtTelefone.setText("");
+		}
+		
+		else
+		{
+			txtNomeAtend.setText("");
+			txtData.setText("");
+			txtObservacao.setText("");
+			txtStatus.setText("");
+			txtTipo.setText("");
 		}
 	}
 
@@ -808,6 +900,21 @@ public class Cadastros extends Utils
 			
 			if (_qual == 't') rdbtnTelefone.setSelected(true);
 			else rdbtnTelefone.setSelected(false);
+		}
+		
+		else
+		{
+			if (_qual == 'c') rdbtnCodAtend.setSelected(true);
+			else rdbtnCodAtend.setSelected(false);
+			
+			if (_qual == 'n') rdbtnNomeAtend.setSelected(true);
+			else rdbtnNomeAtend.setSelected(false);
+			
+			if (_qual == 'd') rdbtnData.setSelected(true);
+			else rdbtnData.setSelected(false);
+			
+			if (_qual == 's') rdbtnStatus.setSelected(true);
+			else rdbtnStatus.setSelected(false);
 		}
 	}
 }

@@ -95,7 +95,7 @@ public class Atendimento_DAO
         
         while (!result.isLast())
         {
-	        if (result.getInt("codAtendimento ") == _codAten) 
+	        if (result.getInt("codAtendimento") == _codAten) 
 	        {
 	        	result.next();
 	        	return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
