@@ -26,7 +26,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 	
 	public int getCodAten() 
 	{
-		return codAten;
+		return this.codAten;
 	}
 
 	public void setCodAten(int _codAten) throws Exception
@@ -37,7 +37,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 
 	public int getCodClien() 
 	{
-		return codClien;
+		return this.codClien;
 	}
 
 	public void setCodClien(int _codClien) throws Exception
@@ -48,7 +48,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 
 	public String getNomeAten() 
 	{
-		return nomeAten;
+		return this.nomeAten;
 	}
 
 	public void setNomeAten(String _nomeAten) throws Exception
@@ -59,7 +59,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 
 	public String getDataAten() 
 	{
-		return dataAten;
+		return this.dataAten;
 	}
 
 	public void setDataAten(String _dataAten) throws Exception
@@ -70,7 +70,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 
 	public String getTipoeAten() 
 	{
-		return tipoeAten;
+		return this.tipoeAten;
 	}
 
 	public void setTipoeAten(String _tipoeAten) throws Exception
@@ -81,7 +81,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 
 	public String getObsClien() 
 	{
-		return obsClien;
+		return this.obsClien;
 	}
 
 	public void setObsClien(String _obsClien) throws Exception

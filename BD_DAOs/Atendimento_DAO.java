@@ -44,8 +44,14 @@ public class Atendimento_DAO
             bd.setInt(1, _aten.getCodAten());
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery ();
-            atend = new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
-            		                    result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"),
+            result.next();
+            
+            atend = new Atendimento_DBO(result.getInt("codAtendimento"), 
+            		result.getInt("codCliente"), 
+            		result.getString("nomeAtendente"), 
+            		                    result.getString("dataAtendimento"), 
+            		                    result.getString("tipoAtendimento"), 
+            		                    result.getString("observacaoCliente"),
             		                    result.getString("statusAtendimento"));
         }
         catch (SQLException erro){throw new Exception ("Erro ao procurar o atendimento");}
@@ -193,13 +199,13 @@ public class Atendimento_DAO
 
         try
         {
-            String sql = "update AtendimentoPG set codCliente=?, nomeAtendente=?, dataAtendimento=?, tipoAtendimento=?," +
+            String sql = "update AtendimentoPG set codCliente=?, nomeAtendente=?, dataAtendimento=?, tipoAtendimento=?, " +
             		     "observacaoCliente=?, statusAtendimento=? where codAtendimento=?";
 
             bd.prepareStatement (sql);
             bd.setInt(1, _aten.getCodClien());
             bd.setString(2, _aten.getNomeAten());
-            bd.setString(3, Utils.dateToString(_aten.getDataAten()));
+            bd.setString(3, _aten.getDataAten());
             bd.setString(4, _aten.getTipoeAten());
             bd.setString(5, _aten.getObsClien());
             bd.setString(6, _aten.getStatusAten());
@@ -238,58 +244,60 @@ public class Atendimento_DAO
         return achou;
     }
     
-    public ListaDupla<Cliente_DBO> getClientes(String _nome, String _email, String _tel) throws Exception 
+    public ListaDupla<Atendimento_DBO> getAtendimentos(String _codClien, String _nome, String _data) throws Exception 
 	{
 		int i = 1;
-		String sql = "select * from ClientePG where";
-		boolean podeNome = false, podeEmail = false, podeTel = false;
-		ListaDupla<Cliente_DBO> clien = new ListaDupla<Cliente_DBO>();
+		String sql = "select * from AtendimentoPG where";
+		boolean podeCod = false, podeNome = false, podeData = false;
+		ListaDupla<Atendimento_DBO> aten = new ListaDupla<Atendimento_DBO>();
 		
 		try
         {
+			if (_codClien != null && !_codClien.equals("")) 
+			{
+				_codClien = "%" + _codClien + "%";
+				sql += " codCliente like ?";
+				podeCod = true;
+			}
 			if (_nome != null && !_nome.equals("")) 
 			{
 				_nome = "%" + _nome + "%";
-				sql += " nomeCliente like ?";
+				if (podeNome)
+					sql += " and nomeAtendente like ?";
+				else
+					sql += " nomeAtendente like ?";
 				podeNome = true;
 			}
-			if (_email != null && !_email.equals("")) 
+			if (_data != null && !_data.equals("")) 
 			{
-				_email = "%" + _email + "%";
-				if (podeNome)
-					sql += " and emailCliente like ?";
+				_data = "%" + _data + "%";
+				if (podeNome || podeData)
+					sql += " and dataAtendimento like ?";
 				else
-					sql += " emailCliente like ?";
-				podeEmail = true;
-			}
-			if (_tel != null && !_tel.equals("")) 
-			{
-				_tel = "%" + _tel + "%";
-				if (podeNome || podeEmail)
-					sql += " and telefone like ?";
-				else
-					sql += " telefone like ?";
-				podeTel = true;
+					sql += " dataAtendimento like ?";
+				podeData = true;
 			}
 
 			bd.prepareStatement(sql);
+            if (podeCod) bd.setString(i++, _codClien);
             if (podeNome) bd.setString(i++, _nome);
-            if (podeEmail) bd.setString(i++, _email);
-            if (podeTel) bd.setString(i, _tel);
+            if (podeData) bd.setString(i, _data);
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery();
             result.next();
             
-            if (result.getString("nomeCliente") == null || result.getString("nomeCliente").equals("")) return null;
+            if (result.getString("nomeAtendente") == null || result.getString("nomeAtendente").equals("")) return null;
             while (!result.isAfterLast())
             {
-            	clien.incluirNoFim(new Elemento<Cliente_DBO>(new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
-	                                                                         result.getString("emailCliente"), result.getString("telefone"))));
+            	aten.incluirNoFim(new Elemento<Atendimento_DBO>(new Atendimento_DBO(result.getInt("codAtendimento"), 
+            																	result.getInt("codCliente"), result.getString("nomeAtendente"), 
+            																	result.getString("dataAtendimento"), result.getString("tipoAtendente"), 
+            																	result.getString("observacao"), result.getString("statusAtendimento"))));
             	result.next();
             }
         }
         catch (SQLException erro){return null;}
 
-        return clien;
+        return aten;
 	}
 }
