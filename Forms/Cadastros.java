@@ -225,6 +225,7 @@ public class Cadastros extends Utils
 						
 						limparCampos();
 						lblCodAtend.setText("---------------------------------------------------");
+						lblCodClienAux.setText("---------------------------------------------------");
 						
 						mudaBotaoTxt(false);
 						mudaBotaoPrint(false, false, false, false);
@@ -864,7 +865,7 @@ public class Cadastros extends Utils
 					{
 						if (podeConcluirBusc)
 						{
-							listaAtend = Utils.aten.getAtendimentos(lblCodClienAux.getText(), txtNomeAtend.getText(), txtData.getText());
+							listaAtend = Utils.aten.getAtendimentos(txtNomeAtend.getText(), txtData.getText(), txtTipo.getText());
 							if (listaAtend != null)
 							{
 								listaAtend.setAtual(listaAtend.getInicio());
@@ -941,7 +942,7 @@ public class Cadastros extends Utils
 				lblCodAtend.setText(aten.getCodAten()+"");
 				lblCodClienAux.setText(aten.getCodClien()+"");
 				txtNomeAtend.setText(aten.getNomeAten());
-				txtData.setText(Utils.dateToString(aten.getDataAten()));
+				txtData.setText(aten.getDataAten());
 				txtTipo.setText(aten.getTipoeAten());
 				txtStatus.setText(aten.getStatusAten());
 				txtObservacao.setText(aten.getObsClien());

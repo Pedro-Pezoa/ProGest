@@ -79,7 +79,7 @@ public class Atendimento_DAO
         result.next();
         
         return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
-                                   result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
+                                   Utils.dateToString(result.getString("dataAtendimento")), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
                                    result.getString("statusAtendimento"));
     }
     
@@ -244,44 +244,44 @@ public class Atendimento_DAO
         return achou;
     }
     
-    public ListaDupla<Atendimento_DBO> getAtendimentos(String _codClien, String _nome, String _data) throws Exception 
+    public ListaDupla<Atendimento_DBO> getAtendimentos(String _nome, String _data, String _tipo) throws Exception 
 	{
 		int i = 1;
 		String sql = "select * from AtendimentoPG where";
-		boolean podeCod = false, podeNome = false, podeData = false;
+		boolean podeNome = false, podeData = false, podeTipo = false;
 		ListaDupla<Atendimento_DBO> aten = new ListaDupla<Atendimento_DBO>();
 		
 		try
         {
-			if (_codClien != null && !_codClien.equals("")) 
-			{
-				_codClien = "%" + _codClien + "%";
-				sql += " codCliente like ?";
-				podeCod = true;
-			}
 			if (_nome != null && !_nome.equals("")) 
 			{
 				_nome = "%" + _nome + "%";
-				if (podeNome)
-					sql += " and nomeAtendente like ?";
-				else
-					sql += " nomeAtendente like ?";
+				sql += " nomeAtendente like ?";
 				podeNome = true;
 			}
 			if (_data != null && !_data.equals("")) 
 			{
 				_data = "%" + _data + "%";
-				if (podeNome || podeData)
+				if (podeNome)
 					sql += " and dataAtendimento like ?";
 				else
 					sql += " dataAtendimento like ?";
 				podeData = true;
 			}
+			if (_tipo != null && !_tipo.equals("")) 
+			{
+				_tipo = "%" + _tipo + "%";
+				if (podeNome || podeData)
+					sql += " and tipoAtendimento like ?";
+				else
+					sql += " tipoAtendimento like ?";
+				podeTipo = true;
+			}
 
 			bd.prepareStatement(sql);
-            if (podeCod) bd.setString(i++, _codClien);
             if (podeNome) bd.setString(i++, _nome);
-            if (podeData) bd.setString(i, _data);
+            if (podeData) bd.setString(i++, _data);
+            if (podeTipo) bd.setString(i, _tipo);
 
             MeuResultSet result = (MeuResultSet)bd.executeQuery();
             result.next();
@@ -289,10 +289,10 @@ public class Atendimento_DAO
             if (result.getString("nomeAtendente") == null || result.getString("nomeAtendente").equals("")) return null;
             while (!result.isAfterLast())
             {
-            	aten.incluirNoFim(new Elemento<Atendimento_DBO>(new Atendimento_DBO(result.getInt("codAtendimento"), 
-            																	result.getInt("codCliente"), result.getString("nomeAtendente"), 
-            																	result.getString("dataAtendimento"), result.getString("tipoAtendente"), 
-            																	result.getString("observacao"), result.getString("statusAtendimento"))));
+            	aten.incluirNoFim(new Elemento<Atendimento_DBO>(new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), 
+            																	    result.getString("nomeAtendente"), Utils.dateToString(result.getString("dataAtendimento")), 
+            																	    result.getString("tipoAtendimento"), result.getString("observacaoCliente"),
+            																	    result.getString("statusAtendimento"))));
             	result.next();
             }
         }
