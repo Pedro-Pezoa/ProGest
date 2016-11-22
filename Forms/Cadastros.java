@@ -32,7 +32,7 @@ public class Cadastros extends Utils
 	private JButton btnCliente, btnAtendimento, btnCancelar, btnInserir, btnBuscar,
 	                btnFim, btnPrim, btnAnt, btnProx, btnExcluir, btnAlterar, btnConcluir;
 	private JTextField txtNomeClien, txtTelefone, txtEmail, txtTipo, txtData, txtNomeAtend, txtStatus;
-	private JLabel lblCodigoCliente, lblCodAtend, lblStatusDoAtendimento, lblObservaoDoCliente, lblCodClien2, lblCdigoAtendimento, lblCodClienAux;
+	private JLabel lblCodigoCliente, lblCodAtend, lblStatusDoAtendimento, lblObservaoDoCliente, lblCodClien2, lblCdigoAtendimento, lblCodClienAtend;
 	private JPanel pnlCliente, pnlAtend;
 	private JTextArea txtObservacao;
 	
@@ -119,7 +119,7 @@ public class Cadastros extends Utils
 					}
 					else
 					{
-						Atendimento at = new Atendimento();
+						Atendimentos at = new Atendimentos();
 						at.main(null);
 					}
 				}catch (Exception e1) {JOptionPane.showMessageDialog(null, e1.getMessage());}
@@ -157,7 +157,7 @@ public class Cadastros extends Utils
 						if (result == 0) 
 						{
 							atendenteAux.setCodAten(Utils.aten.getAnt(Integer.parseInt(lblCodAtend.getText()), qualOrdena).getCodAten());
-							Utils.aten.excluirAten(new Atendimento_DBO(Integer.parseInt(lblCodAtend.getText()), Integer.parseInt(lblCodClienAux.getText()), 
+							Utils.aten.excluirAten(new Atendimento_DBO(Integer.parseInt(lblCodAtend.getText()), Integer.parseInt(lblCodClienAtend.getText()), 
 									                                   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), txtObservacao.getText(), 
 									                                   txtStatus.getText()));
 							JOptionPane.showMessageDialog(null, "Exclusão com Sucesso");
@@ -225,7 +225,7 @@ public class Cadastros extends Utils
 						
 						limparCampos();
 						lblCodAtend.setText("---------------------------------------------------");
-						lblCodClienAux.setText("---------------------------------------------------");
+						lblCodClienAtend.setText("---------------------------------------------------");
 						
 						mudaBotaoTxt(false);
 						mudaBotaoPrint(false, false, false, false);
@@ -577,10 +577,10 @@ public class Cadastros extends Utils
 		lblCdigoAtendimento.setBounds(26, 34, 171, 14);
 		pnlAtend.add(lblCdigoAtendimento);
 		
-		lblCodClienAux = new JLabel("---------------------------------------------------");
-		lblCodClienAux.setFont(new Font("Georgia", Font.PLAIN, 14));
-		lblCodClienAux.setBounds(207, 58, 263, 14);
-		pnlAtend.add(lblCodClienAux);
+		lblCodClienAtend = new JLabel("---------------------------------------------------");
+		lblCodClienAtend.setFont(new Font("Georgia", Font.PLAIN, 14));
+		lblCodClienAtend.setBounds(207, 58, 263, 14);
+		pnlAtend.add(lblCodClienAtend);
 		
 		txtStatus = new JTextField();
 		txtStatus.setFont(new Font("Georgia", Font.PLAIN, 14));
@@ -887,7 +887,7 @@ public class Cadastros extends Utils
 							if (podeConcluirIn)
 							{
 								Utils.aten.incluirAten(new Atendimento_DBO(Utils.aten.getLast(qualOrdena).getCodAten()+1, 
-																		   Integer.parseInt(lblCodClienAux.getText()), 
+																		   Integer.parseInt(lblCodClienAtend.getText()), 
 																		   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), 
 																		   txtObservacao.getText(), txtStatus.getText()));
 								printInfo(Utils.aten.getLast(qualOrdena));
@@ -899,7 +899,7 @@ public class Cadastros extends Utils
 							
 							else
 							{
-								Utils.aten.alterarAten(new Atendimento_DBO(atendenteAux.getCodAten(), Integer.parseInt(lblCodClienAux.getText()), 
+								Utils.aten.alterarAten(new Atendimento_DBO(atendenteAux.getCodAten(), Integer.parseInt(lblCodClienAtend.getText()), 
 																		   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), 
 																		   txtObservacao.getText(), txtStatus.getText()));
 								mudaBotaoTxt(true);
@@ -940,7 +940,7 @@ public class Cadastros extends Utils
 			else
 			{
 				lblCodAtend.setText(aten.getCodAten()+"");
-				lblCodClienAux.setText(aten.getCodClien()+"");
+				lblCodClienAtend.setText(aten.getCodClien()+"");
 				txtNomeAtend.setText(aten.getNomeAten());
 				txtData.setText(aten.getDataAten());
 				txtTipo.setText(aten.getTipoeAten());
