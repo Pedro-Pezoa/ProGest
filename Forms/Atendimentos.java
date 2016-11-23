@@ -1,7 +1,9 @@
 package Forms;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -26,7 +28,11 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.TextArea;
 import java.awt.Label;
+import java.awt.LayoutManager;
+
 import javax.swing.JTextArea;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class Atendimentos extends Utils
 {
@@ -38,7 +44,7 @@ public class Atendimentos extends Utils
 	private boolean ehClien, podeConcluirIn, podeConcluirAlt, podeConcluirBusc;
 	private Cliente_DBO clienteAux;
 	private JLabel lblOrdenarPor;
-	
+	private boolean jaPassou = false;
 	/**
 	 * Launch the application.
 	 */
@@ -84,102 +90,11 @@ public class Atendimentos extends Utils
 			}
 		});
 		frmCadastro.setTitle("Registro de Atendimento");
-		frmCadastro.setBounds(100, 100, 588, 439);
-		frmCadastro.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frmCadastro.setBounds(100, 100, 590, 440);
+		frmCadastro.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmCadastro.getContentPane().setLayout(null);;
 		
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
-		
-		btnCancelar = new JButton("Cancelar");
-		btnCancelar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-//				try 
-//				{
-//					limparCampos();
-//					lblStatus.setText("Sem Status");
-//					cbxObs.setText("");
-//					cbxOpcao.setSelectedIndex(0);
-//					
-//				} catch (Exception e1) {System.err.println(e1.getMessage());}
-			}
-		});
-		btnCancelar.setFont(new Font("Consolas", Font.PLAIN, 18));
-		btnCancelar.setBounds(37, 350, 149, 31);
-		frmCadastro.getContentPane().add(btnCancelar);
-		
-		btnConcluir = new JButton("Concluir");
-		btnConcluir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-//				if (podeConcluir())
-//				{
-//					int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
-//					
-//					if (result == 0)
-//					{
-//						try
-//						{
-//							Utils.clien.incluirClien(new Cliente_DBO(Utils.clien.getLast("").getCodClien()+1, txtNomeClien.getText(), txtNomeAt.getText(), txtData.getText()));
-//
-//							printInfo(Utils.clien.getLast(""));
-//							
-//							mudaBotaoTxt(true);
-//							mudaBotaoPrint(true, true, false, false);
-//							podeConcluirIn = false;
-//							
-//							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
-//						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
-//					}
-//				}
-//				
-//				else if (podeConcluirAlt)
-//				{
-//					int result = JOptionPane.showConfirmDialog(null, "Deseja alterar este Cliente:");	
-//					
-//					if (result == 0)
-//					{
-//						try
-//						{
-//							Utils.clien.alterarClien(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
-//									                                 txtNomeAt.getText(), txtData.getText()));
-//							printInfo(Utils.clien.getCliente_DBO(clienteAux));
-//							
-//							mudaBotaoTxt(true);
-//							mudaBotaoPrint(true, true, true, true);
-//							
-//							podeConcluirAlt = false;
-//							
-//							JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
-//						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
-//					}
-//				}
-//				
-//				else if (podeConcluirBusc)
-//				{
-//					try
-//					{
-//						Utils.clien.getCliente_DBO(new Cliente_DBO(clienteAux.getCodClien(), txtNomeClien.getText(),
-//								                                   txtNomeAt.getText(), txtData.getText()));
-//						printInfo(Utils.clien.getCliente_DBO(clienteAux));
-//						
-//						mudaBotaoTxt(true);
-//						mudaBotaoPrint(true, true, true, true);
-//						
-//						podeConcluirAlt = false;
-//						
-//						JOptionPane.showMessageDialog(null, "Alteração com Sucesso");
-//					}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
-//				}
-//			}
-//
-//			private boolean podeConcluir() {			
-//				if(txtNomeClien.getText() != "" && txtNomeAt.getText() != "" && txtData.getText() != "" && cbxObs.getText() != "")
-//					return true;
-//				return false;
-				}
-		});
-		btnConcluir.setFont(new Font("Consolas", Font.PLAIN, 18));
-		btnConcluir.setBounds(37, 308, 149, 31);
-		frmCadastro.getContentPane().add(btnConcluir);
 		
 		JLabel lblRegistroDeAtendimento = new JLabel("Fa\u00E7a o registro de seu atendimento aqui");
 		lblRegistroDeAtendimento.setFont(new Font("Georgia", Font.PLAIN, 23));
@@ -219,26 +134,125 @@ public class Atendimentos extends Utils
 		frmCadastro.getContentPane().add(lblTelefone);
 		lblTelefone.setFont(new Font("Georgia", Font.PLAIN, 18));
 		
+		final JPanel pnlObs = new JPanel();
+		pnlObs.setBounds(10, 178, 552, 212);
+		frmCadastro.getContentPane().add(pnlObs);
+		pnlObs.setLayout(null);
+		
+		final JComboBox cbxPblm = new JComboBox();
+		cbxPblm.setModel(new DefaultComboBoxModel(new String[] {"Selecione uma Op\u00E7\u00E3o", "Produto danificado", "Falha no pagamento", "Demora na entrega", "Atendimento de m\u00E1 qualidade", "N\u00E3o recebi o produto", "Outros"}));
+		cbxPblm.setFont(new Font("Georgia", Font.PLAIN, 15));
+		cbxPblm.setBounds(226, 180, 305, 23);
+		frmCadastro.getContentPane().add(cbxPblm);
+		
+		
+		
+		final JTextArea cbxObs = new JTextArea();
+		cbxObs.setBounds(237, 11, 305, 200);
+		pnlObs.add(cbxObs);
+		cbxObs.setBorder(border);
+		
+		JLabel lblObservaes = new JLabel("Observa\u00E7\u00F5es :");
+		lblObservaes.setBounds(59, 8, 115, 23);
+		pnlObs.add(lblObservaes);
+		lblObservaes.setFont(new Font("Georgia", Font.PLAIN, 18));
+		
+		btnConcluir = new JButton("Concluir");
+		btnConcluir.setBounds(31, 131, 149, 31);
+		pnlObs.add(btnConcluir);
+		
 		cbxOpcao = new JComboBox();
+		cbxOpcao.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				int i = cbxOpcao.getSelectedIndex();
+				if(i == 1)
+				{
+					frmCadastro.setBounds(100,100,590,480);
+					pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()+20);
+					cbxPblm.setSelectedIndex(0);
+					jaPassou = true;
+				}
+				else
+				{
+					if(jaPassou)
+					{
+						pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()-40);
+						frmCadastro.setBounds(100,100,590,440);
+						jaPassou = false;
+					}					
+				}
+
+			}
+		});
+		
 		cbxOpcao.setBounds(226, 144, 305, 23);
 		frmCadastro.getContentPane().add(cbxOpcao);
 		cbxOpcao.setFont(new Font("Georgia", Font.PLAIN, 15));
 		cbxOpcao.setModel(new DefaultComboBoxModel(new String[] {"Selecione uma Op\u00E7\u00E3o", "Reclama\u00E7\u00E3o", "D\u00FAvida", "Solicita\u00E7\u00E3o de servi\u00E7o"}));
 		
 		lblOrdenarPor = new JLabel("Tipo de atendimento:");
-		lblOrdenarPor.setBounds(47, 142, 171, 23);
+		lblOrdenarPor.setBounds(50, 142, 171, 23);
 		frmCadastro.getContentPane().add(lblOrdenarPor);
 		lblOrdenarPor.setFont(new Font("Georgia", Font.PLAIN, 18));
 		
-		JLabel lblObservaes = new JLabel("Observa\u00E7\u00F5es :");
-		lblObservaes.setBounds(101, 178, 115, 23);
-		frmCadastro.getContentPane().add(lblObservaes);
-		lblObservaes.setFont(new Font("Georgia", Font.PLAIN, 18));
 		
-		final JTextArea cbxObs = new JTextArea();
-		cbxObs.setBounds(226, 181, 305, 200);
-		frmCadastro.getContentPane().add(cbxObs);
-		cbxObs.setBorder(border);
+		btnConcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (podeConcluir())
+				{
+					int result = JOptionPane.showConfirmDialog(null, "Deseja inserir este Cliente:");	
+					
+					if (result == 0)
+					{
+						try
+						{
+							Utils.aten.incluirAten(new Atendimento_DBO(9, 9, txtNomeClien.getText(), txtNomeAt.getText(), txtData.getText(), "d", "set"));
+							printInfo(Utils.clien.getLast(""));
+							
+							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");
+						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
+					}
+				}
+				
+			}
+
+			private boolean podeConcluir() {			
+				if(txtNomeClien.getText() != "" && txtNomeAt.getText() != "" && txtData.getText() 
+						!= "" && cbxOpcao.getSelectedIndex() > 0 && cbxObs.getText() != " ")
+				{
+					if(cbxOpcao.getSelectedIndex() == 1 && cbxPblm.getSelectedIndex() < 1)
+						return false;
+					return true;					
+				}
+				return false;
+				}
+		});
+		btnConcluir.setFont(new Font("Consolas", Font.PLAIN, 18));
+		
+		btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBounds(31, 173, 149, 31);
+		pnlObs.add(btnCancelar);
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try 
+				{
+					limparCampos();
+					cbxObs.setText("");
+					cbxOpcao.setSelectedIndex(0);
+					cbxPblm.setSelectedIndex(0);
+				} catch (Exception e1) {System.err.println(e1.getMessage());}
+			}
+		});
+		btnCancelar.setFont(new Font("Consolas", Font.PLAIN, 18));
+		
+		JLabel lblPblm = new JLabel("Problema principal:");
+		lblPblm.setFont(new Font("Georgia", Font.PLAIN, 18));
+		lblPblm.setBounds(46, 180, 171, 23);
+		frmCadastro.getContentPane().add(lblPblm);
+		
+		
+		
+		
 	}
 
 	private void printInfo(Object _obj) 
