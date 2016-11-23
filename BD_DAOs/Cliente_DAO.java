@@ -108,7 +108,7 @@ public class Cliente_DAO
     	MeuResultSet result = this.getCliente_DAO(_ordenar);
         result.next();
         
-        while (!result.isLast())
+        while (!result.isAfterLast())
         {
 	        if (result.getInt("codCliente") == _codClien) 
 	        {
@@ -117,12 +117,6 @@ public class Cliente_DAO
 		                               result.getString("emailCliente"), result.getString("telefone"));
 	        }
 	        else result.next();
-        }
-        if (result.isLast()) 
-        {
-        	result.previous();
-        	return new Cliente_DBO(result.getInt("codCliente"), result.getString("nomeCliente"), 
-	                               result.getString("emailCliente"), result.getString("telefone"));
         }
         return null;
     }

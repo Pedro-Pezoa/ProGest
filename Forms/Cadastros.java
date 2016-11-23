@@ -157,9 +157,9 @@ public class Cadastros extends Utils
 						if (result == 0) 
 						{
 							atendenteAux.setCodAten(Utils.aten.getAnt(Integer.parseInt(lblCodAtend.getText()), qualOrdena).getCodAten());
-							Utils.aten.excluirAten(new Atendimento_DBO(Integer.parseInt(lblCodAtend.getText()), Integer.parseInt(lblCodClienAtend.getText()), 
-									                                   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), txtObservacao.getText(), 
-									                                   txtStatus.getText()));
+							//Utils.aten.excluirAten(new Atendimento_DBO(Integer.parseInt(lblCodAtend.getText()), Integer.parseInt(lblCodClienAtend.getText()), 
+							//		                                   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), txtObservacao.getText(), 
+							//		                                   txtStatus.getText()));
 							JOptionPane.showMessageDialog(null, "Exclusão com Sucesso");
 						}
 						else JOptionPane.showMessageDialog(null, "Exclusão Cancelada");
@@ -886,10 +886,10 @@ public class Cadastros extends Utils
 						{
 							if (podeConcluirIn)
 							{
-								Utils.aten.incluirAten(new Atendimento_DBO(Utils.aten.getLast(qualOrdena).getCodAten()+1, 
-																		   Integer.parseInt(lblCodClienAtend.getText()), 
-																		   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), 
-																		   txtObservacao.getText(), txtStatus.getText()));
+								//Utils.aten.incluirAten(new Atendimento_DBO(Utils.aten.getLast(qualOrdena).getCodAten()+1, 
+								//										     Integer.parseInt(lblCodClienAtend.getText()), 
+								//										     txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), 
+								//										     txtObservacao.getText(), txtStatus.getText()));
 								printInfo(Utils.aten.getLast(qualOrdena));
 								
 								mudaBotaoTxt(true);
@@ -899,9 +899,9 @@ public class Cadastros extends Utils
 							
 							else
 							{
-								Utils.aten.alterarAten(new Atendimento_DBO(atendenteAux.getCodAten(), Integer.parseInt(lblCodClienAtend.getText()), 
-																		   txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), 
-																		   txtObservacao.getText(), txtStatus.getText()));
+								//Utils.aten.alterarAten(new Atendimento_DBO(atendenteAux.getCodAten(), Integer.parseInt(lblCodClienAtend.getText()), 
+								//										     txtNomeAtend.getText(), txtData.getText(), txtTipo.getText(), 
+								//										     txtObservacao.getText(), txtStatus.getText()));
 								mudaBotaoTxt(true);
 								mudaBotaoPrint(true, true, true, true);
 								podeConcluirAlt = false;

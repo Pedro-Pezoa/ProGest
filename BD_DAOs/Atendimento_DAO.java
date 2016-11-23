@@ -6,7 +6,6 @@ import BD_Basicos.MeuPreparedStatement;
 import BD_Basicos.MeuResultSet;
 import BD_Basicos.Utils;
 import BD_DBOs.Atendimento_DBO;
-import BD_DBOs.Cliente_DBO;
 import Tipos.Elemento;
 import Tipos.ListaDupla;
 
@@ -46,13 +45,9 @@ public class Atendimento_DAO
             MeuResultSet result = (MeuResultSet)bd.executeQuery ();
             result.next();
             
-            atend = new Atendimento_DBO(result.getInt("codAtendimento"), 
-            		result.getInt("codCliente"), 
-            		result.getString("nomeAtendente"), 
-            		                    result.getString("dataAtendimento"), 
-            		                    result.getString("tipoAtendimento"), 
-            		                    result.getString("observacaoCliente"),
-            		                    result.getString("statusAtendimento"));
+            atend = new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
+            		                    result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"),
+            		                    result.getString("statusAtendimento"), result.getString("tipoEscolhido"));
         }
         catch (SQLException erro){throw new Exception ("Erro ao procurar o atendimento");}
 
@@ -80,7 +75,7 @@ public class Atendimento_DAO
         
         return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
                                    Utils.dateToString(result.getString("dataAtendimento")), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
-                                   result.getString("statusAtendimento"));
+                                   result.getString("statusAtendimento"), result.getString("tipoEscolhido"));
     }
     
     public Atendimento_DBO getLast(String _ordenar) throws Exception
@@ -91,7 +86,7 @@ public class Atendimento_DAO
         
         return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
         			 			   result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
-        						   result.getString("statusAtendimento"));
+        						   result.getString("statusAtendimento"), result.getString("tipoEscolhido"));
     }
     
     public Atendimento_DBO getProx(int _codAten, String _ordenar) throws Exception
@@ -106,7 +101,7 @@ public class Atendimento_DAO
 	        	result.next();
 	        	return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
 			 			   				   result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
-			 			   				   result.getString("statusAtendimento"));
+			 			   				   result.getString("statusAtendimento"), result.getString("tipoEscolhido"));
 	        }
 	        else result.next();
         }
@@ -118,27 +113,42 @@ public class Atendimento_DAO
     	MeuResultSet result = this.getAtendimento_DAO(_ordenar);
         result.next();
         
-        while (!result.isLast())
+        while (!result.isAfterLast())
         {
 	        if (result.getInt("codCliente") == _codAten) 
 	        {
 	        	result.previous();
 	        	return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
 		   				   				   result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
-		   				   				   result.getString("statusAtendimento"));
+		   				   				   result.getString("statusAtendimento"), result.getString("tipoEscolhido"));
 	        }
 	        else result.next();
-        }
-        if (result.isLast()) 
-        {
-        	result.previous();
-        	return new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), result.getString("nomeAtendente"), 
-	   				   			       result.getString("dataAtendimento"), result.getString("tipoAtendimento"), result.getString("observacaoCliente"), 
-	   				   			       result.getString("statusAtendimento"));
         }
         return null;
     }
 	
+    public int getTipoEscolhido(String _novoTipo) throws Exception
+    {
+    	int qtos = 0;
+    	try 
+    	{
+			String sql = "select * from AtendimentoPG where tipoEscolhido = ?";
+			
+			bd.prepareStatement(sql);
+            bd.setString(1, _novoTipo);
+
+            MeuResultSet result = (MeuResultSet)bd.executeQuery ();
+            result.next();
+            
+            while (!result.isAfterLast()) 
+            {
+            	qtos++;
+            	result.next();
+            }
+		} catch (Exception e) {return 0;}
+    	return qtos;
+    }
+    
     //-----------------------------------------------------------------------------------------------------------------------------------//
     //------------------------------------------------------------Métodos CRUD-----------------------------------------------------------//
     //-----------------------------------------------------------------------------------------------------------------------------------//
@@ -292,7 +302,7 @@ public class Atendimento_DAO
             	aten.incluirNoFim(new Elemento<Atendimento_DBO>(new Atendimento_DBO(result.getInt("codAtendimento"), result.getInt("codCliente"), 
             																	    result.getString("nomeAtendente"), Utils.dateToString(result.getString("dataAtendimento")), 
             																	    result.getString("tipoAtendimento"), result.getString("observacaoCliente"),
-            																	    result.getString("statusAtendimento"))));
+            																	    result.getString("statusAtendimento"), result.getString("tipoEscolhido"))));
             	result.next();
             }
         }

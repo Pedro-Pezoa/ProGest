@@ -72,8 +72,8 @@ public class Cliente_DBO implements Cloneable, Comparable<Cliente_DBO>
 	@Override
 	public String toString() 
 	{
-		return "Código do Cliente: " + this.codClien + "--Nome do Cliente: " + this.nomeClien + 
-				"--Email do Cliente=" + this.emailClien + "--Telefone do Cliente: " + this.teleClien;
+		return "Código do Cliente: " + this.codClien + " -- Nome do Cliente: " + this.nomeClien + 
+			   " -- Email do Cliente: " + this.emailClien + "--Telefone do Cliente: " + this.teleClien;
 	}
 	
 	@Override

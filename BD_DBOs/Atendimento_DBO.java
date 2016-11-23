@@ -3,13 +3,14 @@ package BD_DBOs;
 public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 {
 	protected int codAten, codClien;
-	protected String nomeAten, dataAten, tipoeAten, obsClien, statusAten;
+	protected String nomeAten, dataAten, tipoeAten, obsClien, statusAten, tipoEscolhido;
 	
 	//---------------------------------------------------------------------------------------------------------------------------//
     //---------------------------------------------------------Construtor--------------------------------------------------------//
     //---------------------------------------------------------------------------------------------------------------------------//
 	
-	public Atendimento_DBO(int _novoAten, int _novoCod, String _novoNome, String _novaData, String _novoTipo, String _novaObsClien, String _novoStatus) throws Exception
+	public Atendimento_DBO(int _novoAten, int _novoCod, String _novoNome, String _novaData, 
+			               String _novoTipo, String _novaObsClien, String _novoStatus, String _novoTipoEsc) throws Exception
 	{
 		this.setCodAten(_novoAten);
 		this.setCodClien(_novoCod);
@@ -18,6 +19,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.setTipoeAten(_novoTipo);
 		this.setObsClien(_novaObsClien);
 		this.setStatusAten(_novoStatus);
+		this.setTipoEsc(_novoTipoEsc);
 	}
 
 	//---------------------------------------------------------------------------------------------------------------------------//
@@ -28,16 +30,41 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 	{
 		return this.codAten;
 	}
+	
+	public int getCodClien() 
+	{
+		return this.codClien;
+	}
+	
+	public String getNomeAten() 
+	{
+		return this.nomeAten;
+	}
+	
+	public String getDataAten() 
+	{
+		return this.dataAten;
+	}
+	
+	public String getTipoeAten() 
+	{
+		return this.tipoeAten;
+	}
+	
+	public String getObsClien() 
+	{
+		return this.obsClien;
+	}
+	
+	public String getStatusAten() 
+	{
+		return this.statusAten;
+	}
 
 	public void setCodAten(int _codAten) throws Exception
 	{
 		if (_codAten <= 0) throw new Exception("Código Atendente Inválido");
 		this.codAten = _codAten;
-	}
-
-	public int getCodClien() 
-	{
-		return this.codClien;
 	}
 
 	public void setCodClien(int _codClien) throws Exception
@@ -46,20 +73,10 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.codClien = _codClien;
 	}
 
-	public String getNomeAten() 
-	{
-		return this.nomeAten;
-	}
-
 	public void setNomeAten(String _nomeAten) throws Exception
 	{
 		if (_nomeAten == null || _nomeAten.equals("")) throw new Exception("Nome do Atendente Inválido");
 		this.nomeAten = _nomeAten;
-	}
-
-	public String getDataAten() 
-	{
-		return this.dataAten;
 	}
 
 	public void setDataAten(String _dataAten) throws Exception
@@ -68,20 +85,10 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.dataAten = _dataAten;
 	}
 
-	public String getTipoeAten() 
-	{
-		return this.tipoeAten;
-	}
-
 	public void setTipoeAten(String _tipoeAten) throws Exception
 	{
 		if (_tipoeAten == null || _tipoeAten.equals("")) throw new Exception("Tipo do Atendimento Inválido");
 		this.tipoeAten = _tipoeAten;
-	}
-
-	public String getObsClien() 
-	{
-		return this.obsClien;
 	}
 
 	public void setObsClien(String _obsClien) throws Exception
@@ -89,20 +96,30 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		if (_obsClien == null || _obsClien.equals("")) throw new Exception("Observação 1 Inválido");
 		this.obsClien = _obsClien;
 	}
-
-	public String getStatusAten() 
+	
+	public void setStatusAten(String _novoStatus) throws Exception
 	{
-		return this.statusAten;
+		if (_novoStatus == null || _novoStatus.equals("")) throw new Exception("Observação 1 Inválido");
+		this.statusAten = _novoStatus;
 	}
 	
-	public void setStatusAten(String _novoStatus) 
+	private void setTipoEsc(String _novoTipoEsc) throws Exception
 	{
-		this.statusAten = _novoStatus;
+		if (_novoTipoEsc == null || _novoTipoEsc.equals("")) throw new Exception("Observação 1 Inválido");
+		this.tipoEscolhido = _novoTipoEsc;
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------------------//
     //-----------------------------------------------------Métodos Apocalipticos----------------------------------------------------//
     //------------------------------------------------------------------------------------------------------------------------------//
+	
+	@Override
+	public String toString() 
+	{
+		return "Código Atendimento: " + this.codAten + " -- Código Cliente: " + this.codClien + " -- Nome Atendente: " + this.nomeAten + 
+			   " -- Data Atendimento: " + this.dataAten + " -- Tipo Atendimento: " + this.tipoeAten + " -- Observação do Cliente: " + this.obsClien + 
+			   " -- Status do Atendimento: " + this.statusAten+ " -- Tipo Escolhido: " + this.tipoEscolhido;
+	}
 	
 	@Override
 	public int hashCode() 
@@ -115,6 +132,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		result *= 7 + this.obsClien.hashCode();
 		result *= 7 + this.statusAten.hashCode();
 		result *= 7 + this.tipoeAten.hashCode();
+		result *= 7 + this.tipoEscolhido.hashCode();
 		return result;
 	}
 
@@ -128,7 +146,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		{
 			Atendimento_DBO outro = (Atendimento_DBO) _obj;
 			if (this.codAten == outro.codAten && this.codClien == outro.codClien && this.nomeAten.equals(outro.nomeAten) && this.dataAten.equals(outro.dataAten) &&
-				this.tipoeAten.equals(outro.tipoeAten) && this.obsClien.equals(outro.obsClien) && this.statusAten.equals(outro.statusAten))
+				this.tipoeAten.equals(outro.tipoeAten) && this.obsClien.equals(outro.obsClien) && this.statusAten.equals(outro.statusAten) && this.tipoEscolhido.equals(outro.tipoEscolhido))
 				return true;
 		}
 		
@@ -156,6 +174,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.tipoeAten = _outro.tipoeAten;
 		this.obsClien = _outro.obsClien;
 		this.statusAten = _outro.statusAten;
+		this.tipoEscolhido = _outro.tipoEscolhido;
 	}
 
 	@Override
