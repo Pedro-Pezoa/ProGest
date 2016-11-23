@@ -160,16 +160,17 @@ public class Atendimento_DAO
 
         try
         {
-            String sql = "insert into AtendimentoPG values(?,?,?,?,?,?,?)";
+            String sql = "insert into AtendimentoPG values(?,?,?,?,?,?,?,?)";
 
             bd.prepareStatement (sql);
             bd.setInt(1, _aten.getCodAten());
             bd.setInt(2, _aten.getCodClien());
             bd.setString(3, _aten.getNomeAten());
-            bd.setString(4, Utils.dateToString(_aten.getDataAten()));
+            bd.setString(4, _aten.getDataAten());
             bd.setString(5, _aten.getTipoeAten());
             bd.setString(6, _aten.getObsClien());
             bd.setString(7, _aten.getStatusAten());
+            bd.setString(8, _aten.getTipoEsc());
 
             bd.executeUpdate();
             bd.commit();

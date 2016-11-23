@@ -165,21 +165,27 @@ public class Atendimentos extends Utils
 		cbxOpcao.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				int i = cbxOpcao.getSelectedIndex();
-				if(i == 1)
-				{
-					frmCadastro.setBounds(100,100,590,480);
-					pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()+20);
-					cbxPblm.setSelectedIndex(0);
-					jaPassou = true;
-				}
-				else
+
+				if(i == 0 || i == -1)
 				{
 					if(jaPassou)
 					{
 						pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()-40);
 						frmCadastro.setBounds(100,100,590,440);
 						jaPassou = false;
-					}					
+					}
+					
+				}
+				else
+				{
+					if(!jaPassou)
+					{
+						frmCadastro.setBounds(100,100,590,480);
+						pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()+20);
+						cbxPblm.setSelectedIndex(0);
+					}
+					
+					jaPassou = true;
 				}
 
 			}
@@ -206,7 +212,9 @@ public class Atendimentos extends Utils
 					{
 						try
 						{
-							Utils.aten.incluirAten(new Atendimento_DBO(9, 9, txtNomeClien.getText(), txtNomeAt.getText(), txtData.getText(), "d", "set"));
+							Utils.aten.incluirAten(new Atendimento_DBO(aten.getLast("").getCodAten()+1
+									, aten.getLast("").getCodClien()+1, txtNomeClien.getText(),
+									txtData.getText(),cbxOpcao.getModel().getSelectedItem().toString(), cbxObs.getText(), "sem status", "outra"));
 							printInfo(Utils.clien.getLast(""));
 							
 							JOptionPane.showMessageDialog(null, "Inclusão com Sucesso");

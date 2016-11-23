@@ -53,7 +53,7 @@ public class Relatorio extends Utils
 		frmRelatorio.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmRelatorio.getContentPane().setLayout(null);
 		
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 		panel.setBounds(165, 45, 650, 500);
 		frmRelatorio.getContentPane().add(panel);
 		

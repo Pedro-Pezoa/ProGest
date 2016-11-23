@@ -60,6 +60,11 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 	{
 		return this.statusAten;
 	}
+	
+	public String getTipoEsc() 
+	{
+		return this.tipoEscolhido;
+	}
 
 	public void setCodAten(int _codAten) throws Exception
 	{
@@ -103,7 +108,7 @@ public class Atendimento_DBO implements Cloneable, Comparable<Atendimento_DBO>
 		this.statusAten = _novoStatus;
 	}
 	
-	private void setTipoEsc(String _novoTipoEsc) throws Exception
+	public void setTipoEsc(String _novoTipoEsc) throws Exception
 	{
 		if (_novoTipoEsc == null || _novoTipoEsc.equals("")) throw new Exception("Observação 1 Inválido");
 		this.tipoEscolhido = _novoTipoEsc;
