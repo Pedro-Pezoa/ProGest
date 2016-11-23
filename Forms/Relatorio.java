@@ -76,8 +76,8 @@ public class Relatorio extends Utils
 				g.fillRect(500, panel.getHeight()-50, 100, 50);
 				
 				g.setColor(Color.BLACK);
-				g.drawLine(0, panel.getHeight(), 100, panel.getHeight()-300);
-				g.drawLine(100, panel.getHeight()-300, 100, panel.getHeight()-300);
+				//g.drawLine(0, panel.getHeight(), 100, panel.getHeight()-300);
+				//g.drawLine(100, panel.getHeight()-300, 200, panel.getHeight()-400);
 			}
 		});
 		btnSpawn.setBounds(450, 11, 89, 23);
