@@ -90,7 +90,7 @@ public class Atendimentos extends Utils
 			}
 		});
 		frmCadastro.setTitle("Registro de Atendimento");
-		frmCadastro.setBounds(100, 100, 590, 440);
+		frmCadastro.setBounds(100, 100, 590, 435);
 		frmCadastro.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmCadastro.getContentPane().setLayout(null);;
 		
@@ -123,6 +123,17 @@ public class Atendimentos extends Utils
 		frmCadastro.getContentPane().add(lblEmail);
 		lblEmail.setFont(new Font("Georgia", Font.PLAIN, 18));
 		
+		final JPanel pnlObs = new JPanel();
+		pnlObs.setBounds(10, 174, 552, 212);
+		frmCadastro.getContentPane().add(pnlObs);
+		pnlObs.setLayout(null);
+		
+		final JLabel lblAsteriscoPersonalizado = new JLabel("");
+		lblAsteriscoPersonalizado.setForeground(Color.RED);
+		lblAsteriscoPersonalizado.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblAsteriscoPersonalizado.setBounds(10, 41, 46, 14);
+		pnlObs.add(lblAsteriscoPersonalizado);
+		
 		txtData = new JTextField();
 		txtData.setBounds(226, 116, 305, 20);
 		frmCadastro.getContentPane().add(txtData);
@@ -134,12 +145,17 @@ public class Atendimentos extends Utils
 		frmCadastro.getContentPane().add(lblTelefone);
 		lblTelefone.setFont(new Font("Georgia", Font.PLAIN, 18));
 		
-		final JPanel pnlObs = new JPanel();
-		pnlObs.setBounds(10, 178, 552, 212);
-		frmCadastro.getContentPane().add(pnlObs);
-		pnlObs.setLayout(null);
+		
 		
 		final JComboBox cbxPblm = new JComboBox();
+		cbxPblm.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				if(cbxPblm.getModel().getSelectedItem().toString().toLowerCase().equals("outros"))
+				{
+					lblAsteriscoPersonalizado.setText("*");
+				}
+			}
+		});
 		cbxPblm.setModel(new DefaultComboBoxModel(new String[] {"Selecione uma Op\u00E7\u00E3o", "Produto danificado", "Falha no pagamento", "Demora na entrega", "Atendimento de m\u00E1 qualidade", "N\u00E3o recebi o produto", "Outros"}));
 		cbxPblm.setFont(new Font("Georgia", Font.PLAIN, 15));
 		cbxPblm.setBounds(226, 180, 305, 23);
@@ -152,8 +168,8 @@ public class Atendimentos extends Utils
 		pnlObs.add(cbxObs);
 		cbxObs.setBorder(border);
 		
-		JLabel lblObservaes = new JLabel("Observa\u00E7\u00F5es :");
-		lblObservaes.setBounds(59, 8, 115, 23);
+		JLabel lblObservaes = new JLabel("Observa\u00E7\u00F5es e/ou");
+		lblObservaes.setBounds(31, 34, 241, 23);
 		pnlObs.add(lblObservaes);
 		lblObservaes.setFont(new Font("Georgia", Font.PLAIN, 18));
 		
@@ -181,10 +197,19 @@ public class Atendimentos extends Utils
 					if(!jaPassou)
 					{
 						frmCadastro.setBounds(100,100,590,480);
-						pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()+20);
+						pnlObs.setLocation(pnlObs.getX(),pnlObs.getY()+40);
 						cbxPblm.setSelectedIndex(0);
 					}
 					
+					switch(i)
+					{
+					case 1: cbxPblm.setModel(new DefaultComboBoxModel(new String[] {"Selecione uma Op\u00E7\u00E3o", "Produto danificado", "Falha no pagamento", "Demora na entrega", "Atendimento de m\u00E1 qualidade", "N\u00E3o recebi o produto", "Outros"}));
+						break;
+					case 2: cbxPblm.setModel(new DefaultComboBoxModel(new String[] {"Selecione uma Op\u00E7\u00E3o", "Preço de produtos", "Como pagar", "O que fazer em caso de erro", "Outros"}));
+						break;
+					case 3: cbxPblm.setModel(new DefaultComboBoxModel(new String[] {"Selecione uma Op\u00E7\u00E3o", "Produtos customizados", "informações adicionais", "Ser informado sobre novos produtos", "Outros"}));
+						break;
+					}
 					jaPassou = true;
 				}
 
@@ -221,14 +246,18 @@ public class Atendimentos extends Utils
 						}catch(Exception e2){JOptionPane.showMessageDialog(null, e2.getMessage());}
 					}
 				}
+				else
+					JOptionPane.showMessageDialog(null, "Você deve preencher todos os campos com *");	
 				
 			}
 
 			private boolean podeConcluir() {			
 				if(txtNomeClien.getText() != "" && txtNomeAt.getText() != "" && txtData.getText() 
-						!= "" && cbxOpcao.getSelectedIndex() > 0 && cbxObs.getText() != " ")
+						!= "" && cbxOpcao.getSelectedIndex() > 0 )
 				{
 					if(cbxOpcao.getSelectedIndex() == 1 && cbxPblm.getSelectedIndex() < 1)
+						return false;
+					if(cbxPblm.getModel().getSelectedItem().toString() == "Outros" && cbxObs.getText() != " ")
 						return false;
 					return true;					
 				}
@@ -253,10 +282,47 @@ public class Atendimentos extends Utils
 		});
 		btnCancelar.setFont(new Font("Consolas", Font.PLAIN, 18));
 		
+		JLabel lblEspecificaessAdicionais = new JLabel("Especifica\u00E7\u00F5es Adicionais :");
+		lblEspecificaessAdicionais.setFont(new Font("Georgia", Font.PLAIN, 18));
+		lblEspecificaessAdicionais.setBounds(10, 68, 241, 23);
+		pnlObs.add(lblEspecificaessAdicionais);
+		
+		
+		
 		JLabel lblPblm = new JLabel("Problema principal:");
 		lblPblm.setFont(new Font("Georgia", Font.PLAIN, 18));
 		lblPblm.setBounds(46, 180, 171, 23);
 		frmCadastro.getContentPane().add(lblPblm);
+		
+		JLabel lblNewLabel = new JLabel("*");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewLabel.setForeground(Color.RED);
+		lblNewLabel.setBounds(10, 65, 46, 14);
+		frmCadastro.getContentPane().add(lblNewLabel);
+		
+		JLabel label = new JLabel("*");
+		label.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		label.setForeground(Color.RED);
+		label.setBounds(10, 91, 46, 14);
+		frmCadastro.getContentPane().add(label);
+		
+		JLabel label_1 = new JLabel("*");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		label_1.setForeground(Color.RED);
+		label_1.setBounds(10, 117, 46, 14);
+		frmCadastro.getContentPane().add(label_1);
+		
+		JLabel label_2 = new JLabel("*");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		label_2.setForeground(Color.RED);
+		label_2.setBounds(10, 187, 46, 14);
+		frmCadastro.getContentPane().add(label_2);
+		
+		JLabel label_3 = new JLabel("*");
+		label_3.setForeground(Color.RED);
+		label_3.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		label_3.setBounds(10, 149, 46, 14);
+		frmCadastro.getContentPane().add(label_3);
 		
 		
 		
